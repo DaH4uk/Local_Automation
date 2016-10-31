@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Сенсор</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <link rel="icon" type="image/png" href="resources/img/favicon.jpeg"/>
+    <!-- inject:css -->
+    <link rel="stylesheet" href="resources/vendor/css/lib.min.css">
+    <link rel="stylesheet" href="resources/css/main.css">
+    <link rel="stylesheet" href="resources/css/app.css">
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <!-- endinject -->
+    <title></title>
+</head>
+<body>
+
+<div ng-if="authenticated" ng-include="'partials/navbar.html'"></div>
+
+<div class="container">
+    <div style="position: relative">
+        <div ng-view="" class="fade"></div>
+    </div>
+</div>
+
+<!-- inject:js -->
+
+<script src="resources/vendor/js/lib.min.js"></script>
+
+<script src="resources/js/app.js"></script>
+
+<script src="resources/js/controllers.js"></script>
+
+<script src="resources/js/directives.js"></script>
+
+<script src="resources/js/services.js"></script>
+
+<!-- Angular Material requires Angular.js Libraries -->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+
+<!-- Angular Material Library -->
+<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+<!-- endinject -->
+
+</body>
+</html>
