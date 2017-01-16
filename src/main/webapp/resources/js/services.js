@@ -114,4 +114,24 @@ myapp.service('TokensService', function ($log, $resource) {
     }
 });
 
+myapp.service('SchemeService', function ($log, $resource, $http) {
+    return {
+        getNodes: function () {
+            var qq = null;
+            $http.get('scheme/nodes', {}).then(function (response) {
+                qq = response.data;
+            });
+            return qq;
+        },
+
+
+       getLinks: function () {
+           return $http.get('scheme/links', {}).then(function (response) {
+               var str = response.data;
+               return str;
+           })
+       }
+   }
+});
+
 

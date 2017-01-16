@@ -1,29 +1,32 @@
-<div class="well page">
+<div class="container contain">
 
-    <h3>Список пользователей</h3>
+    <div class="well page">
 
-    <div class="form-group">
-        <div class="input-group">
-            <span class="input-group-addon glyphicon glyphicon-search"></span>
-            <input type="text" id="addon3a" class="form-control" placeholder="Поиск" ng-model="query">
+        <h3>Список пользователей</h3>
+
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-search"></span>
+                <input type="text" id="addon3a" class="form-control" placeholder="Поиск" ng-model="query">
+            </div>
         </div>
-    </div>
 
 
-    <div id="userList" >
-        <div class="list-group">
-            <div class="list-group-item">
-                <div ng-repeat="user in users | filter:query" class="list-group-item" style="margin-top:16px">
-                    <div class="row-picture">
-                        <img class="circle"
-                             ng-src="resources/img/people/{{user.firstName | lowercase}}-{{user.familyName | lowercase}}.jpg"
-                             alt="icon">
-                    </div>
-                    <div class="row-content">
-                        <h4 class="list-group-item-heading">{{user.firstName}} {{user.familyName}}</h4>
+        <div id="userList">
+            <div class="list-group">
+                <div class="list-group-item">
+                    <div ng-repeat="user in users | filter:query" class="list-group-item" style="margin-top:16px">
+                        <div class="row-picture">
+                            <img class="circle"
+                                 ng-src="resources/img/people/{{user.firstName | lowercase}}-{{user.familyName | lowercase}}.jpg"
+                                 alt="icon">
+                        </div>
+                        <div class="row-content">
+                            <h4 class="list-group-item-heading">{{user.firstName}} {{user.familyName}}</h4>
 
-                        <p class="list-group-item-text"><i class="glyphicon glyphicon-envelope"></i> {{user.email}}
-                        </p>
+                            <p class="list-group-item-text"><i class="glyphicon glyphicon-envelope"></i> {{user.email}}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

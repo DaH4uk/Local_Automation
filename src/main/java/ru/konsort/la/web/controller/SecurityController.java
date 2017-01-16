@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @Api(description = "Users management API")
-public class SeurityController {
+public class SecurityController {
 
 
     @Autowired

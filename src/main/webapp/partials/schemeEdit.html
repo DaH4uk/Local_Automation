@@ -1,0 +1,106 @@
+<!--<md-toolbar class="md-menu-toolbar" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .2);">-->
+    <!--<div layout="row">-->
+
+
+        <!--<div>-->
+            <!--<h2 class="md-toolbar-tools">Редактирование схемы</h2>-->
+            <!--<md-menu-bar>-->
+                <!--<md-menu>-->
+                    <!--<button ng-click="$mdOpenMenu()">-->
+                        <!--Файл-->
+                    <!--</button>-->
+                    <!--<md-menu-content>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('New Document', $event)">-->
+                                <!--Новая схема-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('Save', $event)">-->
+                                <!--Сохранить-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('Print', $event)">-->
+                                <!--Печать-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                        <!--<md-menu-divider></md-menu-divider>-->
+
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('Exit', $event)">-->
+                                <!--Выход-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+
+                    <!--</md-menu-content>-->
+                <!--</md-menu>-->
+                <!--<md-menu>-->
+                    <!--<button ng-click="$mdOpenMenu()">-->
+                        <!--Редактировать-->
+                    <!--</button>-->
+                    <!--<md-menu-content>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('undo', $event)">-->
+                                <!--Отменить-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('redo', $event)">-->
+                                <!--Повторить-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                        <!--<md-menu-divider></md-menu-divider>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('cut', $event)">-->
+                                <!--Вырезать-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('copy', $event)">-->
+                                <!--Копировать-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                        <!--<md-menu-item>-->
+                            <!--<md-button ng-click="ctrl.sampleAction('paste', $event)">-->
+                                <!--Вставить-->
+                            <!--</md-button>-->
+                        <!--</md-menu-item>-->
+                    <!--</md-menu-content>-->
+                <!--</md-menu>-->
+            <!--</md-menu-bar>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</md-toolbar>-->
+
+
+<div id="editDiagram" style="border: none; width:100%; height:93vh; padding-top: -8px; position:relative;"></div>
+
+
+
+<md-button class="md-fab fab" style="background-color: #F50057;" aria-label="Добавить элемент" ng-click="showGridBottomSheet()">
+    <md-tooltip md-direction="left">
+        Добавить элемент
+    </md-tooltip>
+    <md-icon md-svg-src="../resources/img/icons/ic_add_white_24px.svg">
+    </md-icon>
+</md-button>
+
+<md-sidenav class="md-sidenav-right" md-component-id="right"
+            md-disable-backdrop md-whiteframe="4">
+
+    <md-toolbar class="md-theme-indigo">
+        <h1 class="md-toolbar-tools">Disabled Backdrop</h1>
+    </md-toolbar>
+
+    <md-content layout-margin>
+        <p>
+            This sidenav is not showing any backdrop, where users can click on it, to close the sidenav.
+        </p>
+
+    </md-content>
+
+</md-sidenav>
+
+
+

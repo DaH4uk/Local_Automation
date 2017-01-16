@@ -1,7 +1,7 @@
 'use strict';
 
 var myapp = angular
-    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'angular-spinkit']);
+    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'spinkitLoader', 'ngMaterial']);
 
 
 myapp.constant('USER_ROLES', {
@@ -22,12 +22,19 @@ myapp.config(function ($routeProvider, USER_ROLES) {
         }
     }).when('/', {
         redirectTo: '/home'
-    }).when('/scheme', {
-        templateUrl: 'partials/scheme.html',
-        controller: 'SchemeController',
+    }).when('/schemeView', {
+        templateUrl: 'partials/schemeView.html',
+        controller: 'SchemeViewCtrl',
         access: {
             loginRequired: true,
             authorizedRoles: [USER_ROLES.user]
+        }
+    }).when('/schemeEdit',{
+        templateUrl: 'partials/schemeEdit.html',
+        controller: 'SchemeEditCtrl',
+        access: {
+            loginRequired: true,
+            authorizedRoles: [USER_ROLES.admin]
         }
     }).when('/users', {
         templateUrl: 'partials/users.html',
@@ -53,6 +60,13 @@ myapp.config(function ($routeProvider, USER_ROLES) {
     }).when('/login', {
         templateUrl: 'partials/login.html',
         controller: 'LoginController',
+        access: {
+            loginRequired: false,
+            authorizedRoles: [USER_ROLES.all]
+        }
+    }).when('/bottom-sheet.html', {
+        templateUrl: 'partials/bottom-sheet.html',
+        controller: 'ListBottomSheetCtrl',
         access: {
             loginRequired: false,
             authorizedRoles: [USER_ROLES.all]
@@ -86,6 +100,37 @@ myapp.config(function ($routeProvider, USER_ROLES) {
     });
 });
 
+myapp.config(function ($mdThemingProvider) {
+
+
+    $mdThemingProvider.definePalette('blue', {
+        '50': '#E3F2FD',
+        '100': '#BBDEFB',
+        '200': '#90CAF9',
+        '300': '#64B5F6',
+        '400': '#42A5F5',
+        '500': '#0D47A1',
+        '600': '#1E88E5',
+        '700': '#1976D2',
+        '800': '#1565C0',
+        '900': '#0D47A1',
+        'A100': '#82B1FF',
+        'A200': '#448AFF',
+        'A400': '#2979FF',
+        'A700': '#2962FF',
+        'contrastDefaultColor': 'light',    // whether, by default, text (contrast)
+                                            // on this palette should be dark or light
+        'contrastDarkColors': ['50', '100', //hues which contrast should be 'dark' by default
+            '200', '300', '400', 'A100'],
+        'contrastLightColors': undefined    // could also specify this if default was 'dark'
+    });
+
+    $mdThemingProvider.theme('default')
+        .primaryPalette('blue')
+        .accentPalette('pink');
+
+});
+
 myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, USER_ROLES, $q, $timeout) {
 
     $rootScope.$on('$routeChangeStart', function (event, next) {
@@ -103,7 +148,6 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
 
     $rootScope.$on('$routeChangeSuccess', function (scope, next, current) {
         $rootScope.$evalAsync(function () {
-            $.material.init();
         });
     });
 
@@ -150,6 +194,17 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
 
     // Get already authenticated user account
     AuthSharedService.getAccount();
+
+    $rootScope.$on('$routeChangeSuccess', function () {
+        $http.get("scheme/nodes")
+            .success(function (response) {
+                $rootScope.nodes = response;
+            });
+        $http.get("scheme/links")
+            .success(function (response) {
+                $rootScope.links = response;
+            });
+    });
 });
 
 

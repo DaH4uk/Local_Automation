@@ -1,113 +1,240 @@
 .fade {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  opacity: 1;
-}
-
-.cont {
-  position: relative;
-  height: 100%;
-  background-image: url("../img/2560x1440.png");
-  background-size: cover;
-  overflow: auto;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    opacity: 1;
 }
 
 .fade.ng-enter,
 .fade.ng-leave {
-  -webkit-transition: all 1s ease;
-  transition: all 0.5s ease;
+    -webkit-transition: all 1s ease;
+    transition: all 0.5s ease;
 }
 
 .fade.ng-enter {
-  opacity: 0;
+    opacity: 0;
 }
 
 .fade.ng-enter-active {
-  opacity: 1;
+    opacity: 1;
 }
 
 .fade.ng-leave {
-  opacity: 1;
+    opacity: 1;
 }
 
 .fade.ng-leave-active {
-  opacity: 0;
+    opacity: 0;
 }
 
 .profile-image {
-  width: 30px;
-  margin-top: -5px;
-  margin-bottom: -5px;
+    width: 30px;
+    margin-top: -5px;
+    margin-bottom: -5px;
 }
 
 .bg-extended {
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: #ddd;
-  min-width: 100%;
-  height: 100%;
-  display: table;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #ddd;
+    min-width: 100%;
+    height: 100%;
+    display: table;
 }
 
 .align-vertical-center {
-  display: table-cell;
-  vertical-align: middle;
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .well-heading {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 120px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding-left: 30px;
 }
 
 .well-heading h1 {
-  color: #FFF;
-  position: absolute;
-  bottom: 10px;
-  padding-left: 35px;
+    color: #FFF;
+    position: absolute;
+    bottom: 10px;
+    padding-left: 35px;
 }
 
 .well-body {
-  margin: 150px 30px 30px 30px;
+    margin: 80px 30px 30px 30px;
 }
 
 .three-dots-row-spinner {
-  background-color: #009688;
-  width: 50px;
-  height: 50px;
+    background-color: #009688;
+    width: 50px;
+    height: 50px;
 }
 
 .social-icons {
-  margin: 20px;
+    margin: 20px;
 }
 
 .social-icons a {
-  margin-right: 5px;
+    margin-right: 5px;
 }
 
 .social-icons .fa-linkedin {
-  color: #0085AE;
+    color: #0085AE;
 }
 
 .social-icons .fa-github {
-  color: #070709;
+    color: #070709;
 }
 
 .social-icons .fa-twitter {
-  color: #32CCFE;
+    color: #32CCFE;
 }
 
 .social-icons .fa-wordpress {
-  color: #21759b;
+    color: #21759b;
 }
 
 .mat-icon {
-  font-size: inherit;
+    font-size: inherit;
 }
+
+.heading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
+.mainContainer {
+    margin: 0 200px;
+}
+
+.nav {
+    margin-bottom: 20px;
+    height: 60px;
+}
+
+.navButton {
+    min-width: 60px;
+    min-height: 62px;
+}
+
+.images {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+.sideNav {
+    position: fixed;
+    z-index: 999;
+    padding: 0 0;
+    overflow: hidden;
+}
+
+.userView {
+    overflow: hidden;
+    position: relative;
+    padding: 0;
+    margin-bottom: 8px;
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.user_image {
+    height: 64px;
+    width: 64px;
+    margin: 32px 220px 20px 32px;
+    line-height: 24px;
+}
+
+.user_menu_name {
+    margin-left: 32px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.user_menu_role {
+    margin-left: 32px;
+    font-size: 14px;
+    color: #fff;
+}
+
+.user_menu_role:focus, .user_menu_role:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.user_menu_name:focus, .user_menu_name:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.no_text_transform {
+    text-transform: none;
+}
+
+.menu_div {
+    padding: 15px 0;
+}
+
+.menu_list {
+    padding: 0;
+    position: relative;
+}
+
+.menu_button {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    margin: 0;
+    padding: 5px 10px 0 10px;
+    text-align: left;
+}
+
+.menu_button:focus, .menu_button:hover {
+    color: #000000;
+}
+
+.menu_sub_div {
+    height: 35px;
+}
+
+.diagram {
+    border: none;
+    width: 100%;
+    height: 93vh;
+    z-index: 0;
+}
+
+.contain {
+    margin-top: 20px;
+}
+
+.fab {
+    z-index: 999;
+    position: absolute;
+    right: 50px;
+    top: 82vh;
+}
+
+.well-heading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding-left: 30px;
+}
+
