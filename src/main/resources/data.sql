@@ -20,7 +20,7 @@ INSERT INTO NODE_DATA (key, category, pos, text) VALUES ('P3', 'Process', '180 3
 INSERT INTO NODE_DATA (key, category, pos, text, angle) VALUES ('V2', 'Valve', '180 300', 'VM', 270);
 INSERT INTO NODE_DATA (key, category, pos, text, angle) VALUES ('V3', 'Valve', '300 300', 'V2', 180);
 INSERT INTO NODE_DATA (key, category, pos, text) VALUES ('P4', 'Process', '600 0', 'Reserve Tank');
-INSERT INTO NODE_DATA (key, category, pos, text) VALUES ('V4', 'Valve', '450 0', 'VA');
+INSERT INTO NODE_DATA (key, category, pos, text) VALUES ('V4', 'valveGateEntrance', '450 0', 'VA');
 INSERT INTO NODE_DATA (key, category, pos, text, angle) VALUES ('V5', 'Valve', '600 160', 'VB', 90);
 
 INSERT INTO LINK_DATA (fromm, too, color) VALUES ('P1', 'V1', '#e53935');
