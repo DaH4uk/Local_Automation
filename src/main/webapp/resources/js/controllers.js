@@ -149,12 +149,12 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
     })
     .controller('GridBottomSheetCtrl', function ($scope, $mdBottomSheet, $rootScope) {
         $scope.items = [
-            {name: "Кран", icon: "valve", category: "Valve"},
-            {name: "Расходомер", icon: "flowmeter", category: "Flowmeter"},
-            {name: "Прибор учета 1", icon: "meteringDevice-1", category: "MeteringDevice1"},
-            {name: "Прибор учета 2", icon: "meteringDevice-2", category: "MeteringDevice2"},
-            {name: "Насос", icon: "pump", category: "Pump"},
-            {name: "Контроллер", icon: "controller", category: "Controller"}
+            {name: "Кран", icon: "valve", category: "Valve", width: "24"},
+            {name: "Расходомер", icon: "flowmeter", category: "Flowmeter", width: "24"},
+            {name: "Прибор учета 1", icon: "meteringDevice-1", category: "MeteringDevice1", width: "44"},
+            {name: "Прибор учета 2", icon: "meteringDevice-2", category: "MeteringDevice2", width: "44"},
+            {name: "Насос", icon: "pump", category: "Pump", width: "24"},
+            {name: "Контроллер", icon: "controller", category: "Controller", width: "44"}
         ];
 
         $scope.listItemClick = function ($index) {
@@ -195,18 +195,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 "undoManager.isEnabled": true
 
             });
-        // when the document is modified, add a "*" to the title and enable the "Save" button
-        // myDiagram.addDiagramListener("Modified", function (e) {
-        //     var button = document.getElementById("SaveButton");
-        //     if (button) button.disabled = !myDiagram.isModified;
-        //     var idx = document.title.indexOf("*");
-        //     if (myDiagram.isModified) {
-        //         if (idx < 0) document.title += "*";
-        //     }
-        //     else {
-        //         if (idx >= 0) document.title = document.title.substr(0, idx);
-        //     }
-        // });
 
 
         function nodeStyle() {
@@ -232,7 +220,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             ];
         }
 
-        myDiagram.addDiagramListener("Modified", function(e) {
+        myDiagram.addDiagramListener("Modified", function (e) {
             var button = document.getElementById("SaveButton");
             if (button) button.disabled = !myDiagram.isModified;
             var idx = document.title.indexOf("*");
@@ -254,7 +242,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 {
                     fill: "transparent",
                     stroke: null,  // this is changed to "white" in the showPorts function
-                    desiredSize: new go.Size(8, 8),
+                    desiredSize: new go.Size(7, 7),
                     alignment: spot, alignmentFocus: spot,  // align the port on the main Shape
                     portId: name,  // declare this object to be a "port"
                     fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
@@ -266,36 +254,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         // define the Node templates for regular nodes
 
         var lightText = 'whitesmoke';
-
-        myDiagram.nodeTemplateMap.add("Process",
-            $(go.Node, "Auto", nodeStyle() ,
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Shape, "Cylinder1", {
-                        name: "SHAPE",
-                        strokeWidth: 2,
-                        fill: $(go.Brush, "Linear", {
-                            start: go.Spot.Left,
-                            end: go.Spot.Right,
-                            0: "#eeeeee",
-                            0.5: "white",
-                            1: "#eeeeee"
-                        }),
-                        minSize: new go.Size(50, 50),
-                        portId: "",
-                        fromSpot: go.Spot.AllSides,
-                        toSpot: go.Spot.AllSides
-                    },
-                    new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: false
-                    },
-                    new go.Binding("text").makeTwoWay())
-            ),
-            makePort("L", go.Spot.Left, true, true),
-            makePort("R", go.Spot.Right, true, true));
 
         function changeColor(e, obj) {
             myDiagram.startTransaction("changed color");
@@ -320,174 +278,161 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         }
 
         myDiagram.nodeTemplateMap.add("Valve",
-            $(go.Node, "Vertical", nodeStyle(),
+            $(go.Node, go.Panel.Spot, nodeStyle(),
                 new go.Binding("angle").makeTwoWay(),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(56, 50),
+                $(go.Picture, {
+                    desiredSize: new go.Size(56, 50),
                     source: "/resources/img/icons/scheme/valve.svg"
                 }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 0.8)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", new go.Spot(-0.1,0.25), true, true),
+                makePort("R", new go.Spot(1.1,0.25), true, true)
             ));
+
 
         myDiagram.nodeTemplateMap.add("Flowmeter",
-            $(go.Node, "Vertical", nodeStyle(),
+            $(go.Node, go.Panel.Spot, nodeStyle(),  // or "Spot"
                 new go.Binding("angle").makeTwoWay(),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(56, 50),
+                    source: "/resources/img/icons/scheme/flowmeter.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
                 $(go.TextBlock, {
-                        alignment: go.Spot.Center,
                         textAlign: "center",
                         margin: 5,
-                        editable: true
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.2)
                     },
                     new go.Binding("text").makeTwoWay(),
                     // keep the text upright, even when the whole node has been rotated upside down
                     new go.Binding("angle", "angle", function (a) {
                         return a === 180 ? 180 : 0;
                     }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(56, 50),
-                    source: "/resources/img/icons/scheme/flowmeter.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-        myDiagram.nodeTemplateMap.add("MeteringDevice1",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(60, 30),
-                    source: "/resources/img/icons/scheme/meteringDevice-1.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-        myDiagram.nodeTemplateMap.add("MeteringDevice2",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(60, 30),
-                    source: "/resources/img/icons/scheme/meteringDevice-2.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-
-        myDiagram.nodeTemplateMap.add("Pump",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(50, 50),
-                    source: "/resources/img/icons/scheme/pump.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-        myDiagram.nodeTemplateMap.add("Controller",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 0,
-                        editable: true
-                    },
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(80, 40),
-                    source: "/resources/img/icons/scheme/controller.svg"
-                }),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: -27,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
+            )
+        );
+
+        myDiagram.nodeTemplateMap.add("MeteringDevice1",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(60, 30),
+                    source: "/resources/img/icons/scheme/meteringDevice-1.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true)
+
+            ));
+        myDiagram.nodeTemplateMap.add("MeteringDevice2",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(60, 30),
+                    source: "/resources/img/icons/scheme/meteringDevice-2.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true)
+
+            ));
+        myDiagram.nodeTemplateMap.add("Pump",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(50, 50),
+                    source: "/resources/img/icons/scheme/pump.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true)
+
+            ));
+        myDiagram.nodeTemplateMap.add("Controller",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(80, 40),
+                    source: "/resources/img/icons/scheme/controller.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 0.5)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true)
+
             ));
 
-        myDiagram.nodeTemplateMap.add("",  // the default category
-            $(go.Node, "Spot", nodeStyle(),
-                // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
-                $(go.Panel, "Auto",
-                    $(go.Shape, "Rectangle",
-                        {fill: "#00A9C9", stroke: null},
-                        new go.Binding("figure", "figure")),
-                    $(go.TextBlock,
-                        {
-                            font: "bold 11pt Helvetica, Arial, sans-serif",
-                            stroke: lightText,
-                            margin: 8,
-                            maxSize: new go.Size(160, NaN),
-                            wrap: go.TextBlock.WrapFit,
-                            editable: true
-                        },
-                        new go.Binding("text").makeTwoWay())
-                ),
-                // four named ports, one on each side:
-                makePort("T", go.Spot.Top, false, true),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true),
-                makePort("B", go.Spot.Bottom, true, false)
-            ));
 
         myDiagram.linkTemplate =
             $(go.Link, {
@@ -496,8 +441,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     layerName: "Background",
                     routing: go.Link.Orthogonal,
                     corner: 15,
-                    fromSpot: go.Spot.RightSide,
-                    toSpot: go.Spot.LeftSide,
                     curve: go.Link.JumpOver,
                     relinkableFrom: true,
                     relinkableTo: true,
@@ -566,7 +509,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             var diagram = node.diagram;
             if (!diagram || diagram.isReadOnly || !diagram.allowLink) return;
             node.ports.each(function (port) {
-                port.stroke = (show ? "#41BFEC" : null);
+                port.stroke = (show ? "#3a3af9" : null);
+                port.background = (show ? "#ffffff" : null);
             });
         }
 
@@ -578,25 +522,22 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             myDiagram.undoManager.undo();
         });
 
-        $rootScope.$on('redo', function(){
+        $rootScope.$on('redo', function () {
             myDiagram.undoManager.redo();
         });
 
-        $rootScope.$on('diagramSaved', function(){
+        $rootScope.$on('diagramSaved', function () {
             myDiagram.isModified = false;
         });
 
-        $rootScope.$on('addItem', function(event, category){
-            myDiagram.model.addNodeData({ category: category, text: "Текст" });
+        $rootScope.$on('addItem', function (event, category) {
+            myDiagram.model.addNodeData({category: category, text: "Текст"});
             console.log(category);
         });
 
 
-
-
     })
     .controller('SchemeViewCtrl', function ($scope) {
-
 
         var $ = go.GraphObject.make; // for more concise visual tree definitions
         var myDiagram =
@@ -638,208 +579,160 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         var lightText = 'whitesmoke';
 
-        myDiagram.nodeTemplateMap.add("Process",
-            $(go.Node, "Auto", {
-                    locationSpot: new go.Spot(0.5, 0.5),
-                    locationObjectName: "SHAPE",
-                    resizable: false,
-                    resizeObjectName: "SHAPE"
-                },
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Shape, "Cylinder1", {
-                        name: "SHAPE",
-                        strokeWidth: 2,
-                        fill: $(go.Brush, "Linear", {
-                            start: go.Spot.Left,
-                            end: go.Spot.Right,
-                            0: "#eeeeee",
-                            0.5: "white",
-                            1: "#eeeeee"
-                        }),
-                        minSize: new go.Size(50, 50),
-                        portId: "",
-                        fromSpot: go.Spot.AllSides,
-                        toSpot: go.Spot.AllSides
-                    },
-                    new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: false
-                    },
-                    new go.Binding("text").makeTwoWay())
-            ),
-            makePort("L", go.Spot.Left, true, true),
-            makePort("R", go.Spot.Right, true, true));
         myDiagram.nodeTemplateMap.add("Valve",
-            $(go.Node, "Vertical", nodeStyle(),
+            $(go.Node, go.Panel.Spot, nodeStyle(),
                 new go.Binding("angle").makeTwoWay(),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(56, 50),
+                $(go.Picture, {
+                    desiredSize: new go.Size(56, 50),
                     source: "/resources/img/icons/scheme/valve.svg"
                 }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 0.8)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", new go.Spot(-0.1,0.25), true, true),
+                makePort("R", new go.Spot(1.1,0.25), true, true)
             ));
+
 
         myDiagram.nodeTemplateMap.add("Flowmeter",
-            $(go.Node, "Vertical", nodeStyle(),
+            $(go.Node, go.Panel.Spot, nodeStyle(),  // or "Spot"
                 new go.Binding("angle").makeTwoWay(),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(56, 50),
+                    source: "/resources/img/icons/scheme/flowmeter.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
                 $(go.TextBlock, {
-                        alignment: go.Spot.Center,
                         textAlign: "center",
                         margin: 5,
-                        editable: true
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.2)
                     },
                     new go.Binding("text").makeTwoWay(),
                     // keep the text upright, even when the whole node has been rotated upside down
                     new go.Binding("angle", "angle", function (a) {
                         return a === 180 ? 180 : 0;
                     }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(56, 50),
-                    source: "/resources/img/icons/scheme/flowmeter.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-        myDiagram.nodeTemplateMap.add("MeteringDevice1",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(60, 30),
-                    source: "/resources/img/icons/scheme/meteringDevice-1.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-        myDiagram.nodeTemplateMap.add("MeteringDevice2",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(60, 30),
-                    source: "/resources/img/icons/scheme/meteringDevice-2.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-
-        myDiagram.nodeTemplateMap.add("Pump",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(50, 50),
-                    source: "/resources/img/icons/scheme/pump.svg"
-                }),
-                makePort("L", go.Spot.Top, true, true),
-                makePort("R", go.Spot.Bottom, true, true)
-            ));
-
-        myDiagram.nodeTemplateMap.add("Controller",
-            $(go.Node, "Vertical", nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: 0,
-                        editable: true
-                    },
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-
-                $(go.Picture, { desiredSize: new go.Size(80, 40),
-                    source: "/resources/img/icons/scheme/controller.svg"
-                }),
-                $(go.TextBlock, {
-                        alignment: go.Spot.Center,
-                        textAlign: "center",
-                        margin: -27,
-                        editable: true
-                    },
-                    new go.Binding("text").makeTwoWay()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-            ));
+            )
+        );
 
-        myDiagram.nodeTemplateMap.add("",  // the default category
-            $(go.Node, "Spot", nodeStyle(),
-                // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
-                $(go.Panel, "Auto",
-                    $(go.Shape, "Rectangle",
-                        {fill: "#00A9C9", stroke: null},
-                        new go.Binding("figure", "figure")),
-                    $(go.TextBlock,
-                        {
-                            font: "bold 11pt Helvetica, Arial, sans-serif",
-                            stroke: lightText,
-                            margin: 8,
-                            maxSize: new go.Size(160, NaN),
-                            wrap: go.TextBlock.WrapFit,
-                            editable: true
-                        },
-                        new go.Binding("text").makeTwoWay())
-                ),
-                // four named ports, one on each side:
-                makePort("T", go.Spot.Top, false, true),
+        myDiagram.nodeTemplateMap.add("MeteringDevice1",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(60, 30),
+                    source: "/resources/img/icons/scheme/meteringDevice-1.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true),
-                makePort("B", go.Spot.Bottom, true, false)
+                makePort("R", go.Spot.Right, true, true)
+
+            ));
+        myDiagram.nodeTemplateMap.add("MeteringDevice2",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(60, 30),
+                    source: "/resources/img/icons/scheme/meteringDevice-2.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true)
+
+            ));
+        myDiagram.nodeTemplateMap.add("Pump",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(50, 50),
+                    source: "/resources/img/icons/scheme/pump.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true)
+
+            ));
+        myDiagram.nodeTemplateMap.add("Controller",
+            $(go.Node, go.Panel.Spot, nodeStyle(),
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(80, 40),
+                    source: "/resources/img/icons/scheme/controller.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 0.5)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()),
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true)
+
             ));
 
 
@@ -850,9 +743,11 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     layerName: "Background",
                     routing: go.Link.Orthogonal,
                     corner: 15,
-                    fromSpot: go.Spot.RightSide,
-                    toSpot: go.Spot.LeftSide,
-                    curve: go.Link.JumpOver
+                    curve: go.Link.JumpOver,
+                    relinkableFrom: true,
+                    relinkableTo: true,
+                    reshapable: true,
+                    resegmentable: true,
                     // mouse-overs subtly highlight links:
                 },
                 // make sure links come in from the proper direction and go out appropriately
@@ -863,7 +758,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     return spotConverter(d);
                 }),
 
-                new go.Binding("points").makeTwoWay(),
+
                 // mark each Shape to get the link geometry with isPanelMain: true
                 $(go.Shape, {
                         isPanelMain: true,
@@ -879,7 +774,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     strokeDashArray: [20, 40]
                 })
             );
-
         for (var i = 0; i < $scope.nodes.length; i++) {
             var obj = $scope.nodes[i];
             if (obj.category == null) {

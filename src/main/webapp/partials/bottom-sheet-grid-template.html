@@ -7,7 +7,7 @@
             <md-list-item ng-repeat="item in items">
                 <div>
                     <md-button class="md-grid-item-content" ng-click="listItemClick($index)">
-                        <img style="height: 24px; width: 24px"src="resources/img/icons/scheme/{{item.icon}}.svg"/>
+                        <img style="height: 24px; width: {{item.width}}px" src="resources/img/icons/scheme/{{item.icon}}.svg"/>
                         <div class="md-grid-text"> {{ item.name }} </div>
                     </md-button>
                 </div>
