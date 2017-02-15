@@ -25,6 +25,12 @@
                         <span class="md-alt-text" style="margin-left: 75px;"> {{ 'M-Y' | keyboardShortcut }}
                     </md-button>
                 </md-menu-item>
+
+                <md-menu-item>
+                    <md-button ng-click="showUploadImageDialog($event)">
+                        <img src="resources/img/icons/ic_file_upload_black_24px.svg"/> Загрузить изображение
+                    </md-button>
+                </md-menu-item>
                 <md-menu-item>
                     <md-button ng-click="showAlert($event)" ><img src="resources/img/icons/ic_code_black_24px.svg"/> Код схемы</md-button>
                 </md-menu-item>

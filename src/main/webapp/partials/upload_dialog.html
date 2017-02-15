@@ -1,0 +1,50 @@
+<md-dialog aria-label="Загрузка фонового изображения">
+
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Загрузка изображения</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-src="resources/img/icons/ic_close_white_24px.svg" aria-label="Закрыть"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <form>
+            <div class="md-dialog-content">
+                <h2>Выберите изображение для загрузки</h2>
+                <p>
+                <div class="row">
+
+                    <div class="col-md-3">
+
+
+                        <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                        <lf-ng-md-file-input lf-files="files" type="file"
+                                             lf-option="optoin08"
+                                             lf-placeholder="Выберите изображение" lf-browse-label="Обзор"
+                                             lf-remove-label="Удалить" multiple drag preview
+                                             progress></lf-ng-md-file-input>
+                    </div>
+
+                    <br/><br/>
+                    <md-button class="md-raised md-primary" ng-click="upload()">Загрузить</md-button>
+                <br/><br/>
+                    <md-progress-linear ng-if="showProgress" md-mode="determinate"
+                                        value="{{progress}}"></md-progress-linear>
+
+                </div>
+            </div>
+        </form>
+
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="hide()">
+            Готово
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

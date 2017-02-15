@@ -102,6 +102,58 @@ myapp.service('UsersService', function ($log, $resource) {
     }
 });
 
+myapp.service('DataService', function ($log, $resource) {
+    return {
+        getKaratData: function () {
+            var karatResource = $resource('data', {}, {
+                query: {method: 'GET', params: {element: 'karat_data'}, isArray: true}
+            });
+            return karatResource.query();
+        },
+        getSauterDayTemp: function () {
+            var sauterResourse = $resource('data', {}, {
+                query: {method: 'GET', params: {element: 'sauter_read_day_sp_rk1'}, isArray: true}
+            });
+            return sauterResourse.query();
+        },
+        getSauterNightTemp: function () {
+            var sauterResourse = $resource('data', {}, {
+                query: {method: 'GET', params: {element: 'sauter_read_night_sp_rk1'}, isArray: true}
+            });
+            return sauterResourse.query();
+        },
+        getSauterCoilVal: function () {
+            var sauterResourse = $resource('data', {}, {
+                query: {method: 'GET', params: {element: 'sauter_read_coil'}, isArray: true}
+            });
+            return sauterResourse.query();
+        },
+        setSauterDayVal: function (val) {
+            var sauterResourse = $resource('set_data', {}, {
+                query: {method: 'GET', params: {element: "day_setpoint_rk1", val: val}, isArray: false}
+            });
+            return sauterResourse.query();
+        },
+        setSauterNightVal: function (val) {
+            var sauterResourse = $resource('set_data', {}, {
+                query: {method: 'GET', params: {element: "night_setpoint_rk1", val: val}, isArray: false}
+            });
+            return sauterResourse.query();
+        },
+        setSauterCoilVal: function (val) {
+            var sauterResourse = $resource('set_data', {}, {
+                query: {method: 'GET', params: {element: "write_coil_57", val: val}, isArray: false}
+            });
+            return sauterResourse.query();
+        },
+        setSauterControlVal: function (val) {
+            var sauterResourse = $resource('set_data', {}, {
+                query: {method: 'GET', params: {element: "control_rk1", val: val}, isArray: false}
+            });
+            return sauterResourse.query();
+        }
+    }
+});
 
 myapp.service('TokensService', function ($log, $resource) {
     return {
@@ -125,13 +177,13 @@ myapp.service('SchemeService', function ($log, $resource, $http) {
         },
 
 
-       getLinks: function () {
-           return $http.get('scheme/links', {}).then(function (response) {
-               var str = response.data;
-               return str;
-           })
-       }
-   }
+        getLinks: function () {
+            return $http.get('scheme/links', {}).then(function (response) {
+                var str = response.data;
+                return str;
+            })
+        }
+    }
 });
 
 

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -13,6 +14,8 @@ import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import javax.servlet.ServletContext;
 
 @Configuration
 @Import({SecurityConfig.class})
@@ -50,6 +53,15 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         resource.setDefaultEncoding("UTF-8");
         return resource;
     }
+
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver commonsMultipartResolver(ServletContext servletContext){
+        CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver(servletContext);
+        commonsMultipartResolver.setMaxInMemorySize(1052428800);
+        commonsMultipartResolver.setMaxUploadSize(1052428800);
+        return commonsMultipartResolver;
+    }
+
 
 
 }

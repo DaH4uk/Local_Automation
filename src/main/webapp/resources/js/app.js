@@ -1,7 +1,7 @@
 'use strict';
 
 var myapp = angular
-    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'spinkitLoader', 'ngMaterial']);
+    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'spinkitLoader', 'ngMaterial', 'angularFileUpload', 'lfNgMdFileInput']);
 
 
 myapp.constant('USER_ROLES', {
@@ -28,6 +28,13 @@ myapp.config(function ($routeProvider, USER_ROLES) {
         access: {
             loginRequired: true,
             authorizedRoles: [USER_ROLES.user]
+        }
+    }).when('/dataView', {
+        templateUrl: 'partials/dataView.html',
+        controller: 'DataViewCtrl',
+        access: {
+            loginRequired: true,
+            authorizedRoles: [USER_ROLES.admin]
         }
     }).when('/schemeEdit',{
         templateUrl: 'partials/schemeEdit.html',

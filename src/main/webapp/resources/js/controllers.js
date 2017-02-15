@@ -36,6 +36,10 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             href: '#/schemeView',
             imageUrl: 'resources/img/icons/ic_device_hub_white_24px.svg'
         }, {
+            name: "Доступ к данным",
+            href: "#/dataView",
+            imageUrl: "resources/img/icons/ic_view_list_black_24px.svg"
+        }, {
             name: 'Пользователи',
             href: '#/users',
             imageUrl: 'resources/img/icons/ic_supervisor_account_white_24px.svg'
@@ -60,6 +64,99 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             location.href = item.url;
         }
     })
+    .controller('DataViewCtrl', function ($scope, DataService) {
+        $scope.karatData = DataService.getKaratData();
+        $scope.sauterDayTemp = DataService.getSauterDayTemp();
+        $scope.sauterNightTemp = DataService.getSauterNightTemp();
+        $scope.sauterCoilVal = DataService.getSauterCoilVal();
+        DataService.getSauterCoilVal().$promise.then(function (res) {
+            if (res[0] == 0){
+                $scope.sauterCoilVal = false;
+            } else {
+                $scope.sauterCoilVal = true;
+            }
+            console.log($scope.sauterCoilVal);
+        });
+
+        $scope.setSauterDayTemp = function () {
+            DataService.setSauterDayVal($scope.sauterDayTemp[0]);
+        };
+        $scope.setSauterNightTemp = function () {
+            DataService.setSauterNightVal($scope.sauterNightTemp[0]);
+        };
+        $scope.setSauterCoil = function () {
+            var coilValue;
+            if ($scope.sauterCoilVal){
+                coilValue = 1;
+            } else {
+                coilValue = 0;
+            }
+            DataService.setSauterCoilVal(coilValue);
+        };
+
+        $scope.setSauterControlVal = function () {
+            DataService.setSauterControlVal($scope.controlVal);
+        };
+
+
+
+
+        //
+        // console.log($scope.sauterCoilVal);
+
+
+    })
+    .controller('ImgUplDlgCtrl', function ($scope, $http, $mdDialog) {
+        $scope.showProgress = false;
+
+        $scope.upload = function () {
+            $scope.showProgress = true;
+            $scope.progress = 0;
+            var formData = new FormData();
+            $scope.progress = 10;
+
+            angular.forEach($scope.files, function (obj) {
+                if (!obj.isRemote) {
+                    formData.append('file', obj.lfFile);
+                }
+                $scope.progress = 30;
+            });
+
+            var request = new XMLHttpRequest();
+            request.open('POST', './scheme/upload');
+            $scope.progress = 70;
+
+            request.send(formData);
+            $scope.progress = 100;
+
+
+        };
+
+        $scope.hide = function () {
+            $mdDialog.hide();
+            $http({
+                method: 'GET',
+                url: '/scheme/files'
+            }).then(function successCallback(response) {
+                var images = [];
+                response.data.forEach(function (value) {
+                    console.log(value);
+                });
+
+                console.log(images);
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
+        };
+
+        $scope.cancel = function () {
+            $mdDialog.cancel();
+        };
+
+
+    })
     .controller('NavbarCtrl', function ($rootScope, $timeout, $mdSidenav, $scope, $location, $mdDialog, $http) {
 
         $rootScope.$on("$routeChangeSuccess", function () {
@@ -73,6 +170,23 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         $scope.redo = function (event) {
             $rootScope.$emit('redo');
         };
+
+        $scope.showUploadImageDialog = function (ev) {
+            $mdDialog.show({
+                controller: 'ImgUplDlgCtrl',
+                templateUrl: 'partials/upload_dialog.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+            })
+                .then(function (answer) {
+                    $scope.status = 'You said the information was "' + answer + '".';
+                }, function () {
+                    $scope.status = 'You cancelled the dialog.';
+                });
+        };
+
         var dialog = function (title, message, ev) {
             $mdDialog.show(
                 $mdDialog.alert()
@@ -296,8 +410,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     new go.Binding("angle", "angle", function (a) {
                         return a === 180 ? 180 : 0;
                     }).ofObject()),
-                makePort("L", new go.Spot(-0.1,0.25), true, true),
-                makePort("R", new go.Spot(1.1,0.25), true, true)
+                makePort("L", new go.Spot(-0.1, 0.25), true, true),
+                makePort("R", new go.Spot(1.1, 0.25), true, true)
             ));
 
 
@@ -352,7 +466,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
         myDiagram.nodeTemplateMap.add("MeteringDevice2",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -378,7 +491,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
         myDiagram.nodeTemplateMap.add("Pump",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -404,7 +516,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
         myDiagram.nodeTemplateMap.add("Controller",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -430,7 +541,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
 
 
@@ -598,8 +708,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     new go.Binding("angle", "angle", function (a) {
                         return a === 180 ? 180 : 0;
                     }).ofObject()),
-                makePort("L", new go.Spot(-0.1,0.25), true, true),
-                makePort("R", new go.Spot(1.1,0.25), true, true)
+                makePort("L", new go.Spot(-0.1, 0.25), true, true),
+                makePort("R", new go.Spot(1.1, 0.25), true, true)
             ));
 
 
@@ -654,7 +764,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
         myDiagram.nodeTemplateMap.add("MeteringDevice2",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -680,7 +789,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
         myDiagram.nodeTemplateMap.add("Pump",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -706,7 +814,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
         myDiagram.nodeTemplateMap.add("Controller",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -732,7 +839,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }).ofObject()),
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
-
             ));
 
 

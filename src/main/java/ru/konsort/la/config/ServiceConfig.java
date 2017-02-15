@@ -1,12 +1,23 @@
 package ru.konsort.la.config;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ComponentScan("ru.konsort.la.service")
+
+
 public class ServiceConfig {
-   
-     
 
+    private String driverAddress;
+    private String driverPort;
+
+    public ServiceConfig(){
+        this.driverAddress = "http://85.26.195.226";
+        this.driverPort = "8888";
+    }
+
+    public String getDriverAddress() {
+        return driverAddress;
+    }
+
+    public String getDriverPort() {
+        return driverPort;
+    }
 }
