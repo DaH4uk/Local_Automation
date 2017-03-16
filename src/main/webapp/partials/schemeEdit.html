@@ -2,13 +2,16 @@
 
 
 
-<md-button class="md-fab fab" style="background-color: #F50057;" aria-label="Добавить элемент" ng-click="showGridBottomSheet()">
-    <md-tooltip md-direction="left">
-        Добавить элемент
-    </md-tooltip>
-    <md-icon md-svg-src="../resources/img/icons/ic_add_white_24px.svg">
-    </md-icon>
-</md-button>
+
+        <md-button class="md-fab fab" style="background-color: #F50057;" aria-label="Добавить элемент"
+                   ng-click="showTabDialog($event)">
+            <md-tooltip md-direction="left" md-visible="tooltipVisible">
+                Добавить элемент
+            </md-tooltip>
+            <md-icon md-svg-src="../resources/img/icons/ic_add_white_24px.svg">
+            </md-icon>
+        </md-button>
+
 
 <md-sidenav class="md-sidenav-right" md-component-id="right"
             md-disable-backdrop md-whiteframe="4">

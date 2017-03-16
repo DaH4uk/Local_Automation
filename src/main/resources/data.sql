@@ -13,6 +13,7 @@ INSERT INTO users_authority (id_user, id_authority) VALUES (1, 3);
 INSERT INTO users_authority (id_user, id_authority) VALUES (2, 3);
 INSERT INTO users_authority (id_user, id_authority) VALUES (3, 3);
 
+
 -- INSERT INTO NODE_DATA (key, pos, text) VALUES ('P1', '0 0', 'Process');
 -- INSERT INTO NODE_DATA (key, category, pos, text) VALUES ('P2', 'Process', '450 200', 'Tank');
 -- INSERT INTO NODE_DATA (key, category, pos, text) VALUES ('V1', 'Valve', '150 0', 'V1');

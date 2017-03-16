@@ -11,12 +11,12 @@ class HttpLocalServiceImplTest {
 
     @Test
     public void send_get_karat_test() throws Exception {
-        System.out.println(httpLocalServiceImpl.sendGet("/cgi-bin/current_data.py?get_data=yes"));
+        System.out.println(httpLocalServiceImpl.sendGet("current_data.py?get_data=yes"));
     }
 
     @Test
     public void send_get_sauter_read_day_test() throws Exception {
-        System.out.println(httpLocalServiceImpl.sendGet("/cgi-bin/sauter.py?read_day_sp_rk1=yes"));
+        System.out.println(httpLocalServiceImpl.sendGet("sauter.py?read_day_sp_rk1=yes"));
     }
 
     @Test

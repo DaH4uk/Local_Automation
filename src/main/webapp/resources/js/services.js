@@ -182,6 +182,12 @@ myapp.service('SchemeService', function ($log, $resource, $http) {
                 var str = response.data;
                 return str;
             })
+        },
+        getImagesIds: function () {
+            var imagesResource = $resource('scheme/getImageIds/', {}, {
+                query: {method: 'GET', params: {}, isArray: true}
+            });
+            return imagesResource.query();
         }
     }
 });

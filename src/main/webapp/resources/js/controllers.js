@@ -64,45 +64,163 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             location.href = item.url;
         }
     })
-    .controller('DataViewCtrl', function ($scope, DataService) {
-        $scope.karatData = DataService.getKaratData();
-        $scope.sauterDayTemp = DataService.getSauterDayTemp();
-        $scope.sauterNightTemp = DataService.getSauterNightTemp();
-        $scope.sauterCoilVal = DataService.getSauterCoilVal();
-        DataService.getSauterCoilVal().$promise.then(function (res) {
-            if (res[0] == 0){
-                $scope.sauterCoilVal = false;
+    .controller('DataViewCtrl', function ($scope, $mdToast, DataService) {
+        $scope.karatDataLoading = true;
+        $scope.sauterDayloading = true;
+        $scope.sauterNightLoading = true;
+        $scope.sauterCoilLoading = true;
+
+        $scope.sauterDayDisabled = false;
+        $scope.sauterNightDisabled = false;
+        $scope.coilDisabled = false;
+
+        var last = {
+            bottom: false,
+            top: true,
+            left: false,
+            right: true
+        };
+
+        $scope.toastPosition = angular.extend({},last);
+
+        $scope.getToastPosition = function() {
+            sanitizePosition();
+
+            return Object.keys($scope.toastPosition)
+                .filter(function(pos) { return $scope.toastPosition[pos]; })
+                .join(' ');
+        };
+
+        function sanitizePosition() {
+            var current = $scope.toastPosition;
+
+            last = angular.extend({},current);
+        }
+
+
+        var showToast = function(msg, delay) {
+            var pinTo = $scope.getToastPosition();
+
+            $mdToast.show(
+                $mdToast.simple()
+                    .textContent(msg)
+                    .position(pinTo )
+                    .hideDelay(delay*1000)
+            );
+        };
+
+        DataService.getKaratData().$promise.then(function (res) {
+            if (res[0].indexOf('Error')+1){
+                showToast("Не удалось загрузить значения регистров для Карат-307. Произошла ошибка: " + res[0], 15);
+                $scope.KaratError = "Произошла ошибка при загрузке данных: " + res[0]
             } else {
-                $scope.sauterCoilVal = true;
+                $scope.karatData = new Array();
+                res.forEach(function (val) {
+                    $scope.karatData.push(JSON.parse(val));
+                });
+                showToast("Значения регистров для Карат-307 успешно загружены!", 3);
+
+
             }
-            console.log($scope.sauterCoilVal);
+            $scope.karatDataLoading = false;
+        });
+        DataService.getSauterDayTemp().$promise.then(function (res) {
+            if (res[0].indexOf('Error')+1){
+                showToast("Не удалось загрузить значение дневной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
+                $scope.sauterDayDisabled = true;
+            } else {
+                $scope.sauterDayTemp = res;
+                showToast("Значение дневной уставки для SAUTER EQJV125 успешно загружено!", 3);
+
+            }
+
+            $scope.sauterDayloading = false;
+        });
+        DataService.getSauterNightTemp().$promise.then(function (res) {
+            if (res[0].indexOf('Error')+1){
+                showToast("Не удалось загрузить значение ночной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
+                $scope.sauterNightDisabled = true;
+
+            } else {
+                $scope.sauterNightTemp = res;
+                showToast("Значение ночной уставки для SAUTER EQJV125 успешно загружено!", 3);
+
+            }
+            $scope.sauterNightLoading = false;
+        });
+        DataService.getSauterCoilVal().$promise.then(function (res) {
+            if (res[0].indexOf('Error')+1){
+                showToast("Не удалось загрузить положение насоса для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
+                $scope.coilDisabled = true;
+
+            } else {
+                $scope.sauterCoilVal = res[0];
+                if (res[0] == true) {
+                    $scope.sauterCoilVal = 1;
+                } else {
+                    $scope.sauterCoilVal = 0;
+                }
+                showToast("Положение насоса для SAUTER EQJV125 успешно загружено!", 3);
+            }
+
+
+            $scope.sauterCoilLoading = false;
         });
 
+        $scope.sauterChange = function (s) {
+            $scope.sauterCoilVal = s;
+        };
+
         $scope.setSauterDayTemp = function () {
-            DataService.setSauterDayVal($scope.sauterDayTemp[0]);
+            $scope.sauterDayloading = true;
+            DataService.setSauterDayVal($scope.sauterDayTemp[0]).$promise.then(function (res) {
+                if (res.Errors == "Complete"){
+                    showToast("Значение дневной уставки для SAUTER EQJV125 успешно установлено!", 3);
+                } else {
+                    showToast("Не удалось установить значение дневной уставки для SAUTER EQJV125. \n Поизошла ошибка: "+ res.Errors, 15);
+                }
+                $scope.sauterDayloading = false;
+            });
         };
         $scope.setSauterNightTemp = function () {
-            DataService.setSauterNightVal($scope.sauterNightTemp[0]);
+            var tmp =
+            $scope.sauterNightLoading = true;
+            DataService.setSauterNightVal($scope.sauterNightTemp[0]).$promise.then(function (res) {
+                if (res.Errors == "Complete"){
+                    showToast("Значение ночной уставки для SAUTER EQJV125 успешно установлено!", 3);
+                } else {
+                    showToast("Не удалось установить значение ночной уставки для SAUTER EQJV125. \n Поизошла ошибка: "+ res.Errors, 15);
+                }
+                $scope.sauterNightLoading = false;
+            });
         };
         $scope.setSauterCoil = function () {
-            var coilValue;
-            if ($scope.sauterCoilVal){
-                coilValue = 1;
-            } else {
-                coilValue = 0;
-            }
-            DataService.setSauterCoilVal(coilValue);
+            console.log($scope.sauterCoilVal);
+
+
+            $scope.sauterCoilLoading = true;
+
+            DataService.setSauterCoilVal($scope.sauterCoilVal).$promise.then(function (res) {
+                if (res.Errors == "Complete"){
+                    showToast("Положение насоса для SAUTER EQJV125 успешно установлено!", 3);
+                } else {
+                    showToast("Не удалось установить положение насоса для SAUTER EQJV125. Поизошла ошибка: "+ res.Errors, 15);
+                }
+                $scope.sauterCoilLoading = false;
+            });
         };
 
         $scope.setSauterControlVal = function () {
-            DataService.setSauterControlVal($scope.controlVal);
+            DataService.setSauterControlVal($scope.controlVal).$promise.then(function (res) {
+                if (res.Errors == "Complete"){
+                    showToast("Положение трехпозиционного клапана для SAUTER EQJV125 успешно установлено!", 3);
+                } else {
+                    showToast("Не удалось установить положение трехпозиционного клапана для SAUTER EQJV125. Поизошла ошибка: "+ res.Errors, 15);
+                }
+
+            });
         };
 
-
-
-
-        //
-        // console.log($scope.sauterCoilVal);
 
 
     })
@@ -261,7 +379,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
 
     })
-    .controller('GridBottomSheetCtrl', function ($scope, $mdBottomSheet, $rootScope) {
+    .controller('DialogCtrl', function ($scope, $mdDialog, $rootScope, SchemeService) {
         $scope.items = [
             {name: "Кран", icon: "valve", category: "Valve", width: "24"},
             {name: "Расходомер", icon: "flowmeter", category: "Flowmeter", width: "24"},
@@ -271,20 +389,42 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             {name: "Контроллер", icon: "controller", category: "Controller", width: "44"}
         ];
 
+        SchemeService.getImagesIds().$promise.then(function (res) {
+            $scope.imageIds = res;
+        });
+        var a = [];
+        a.length
+
+        $scope.cancel = function () {
+            $mdDialog.hide();
+        };
+
         $scope.listItemClick = function ($index) {
             var clickedItem = $scope.items[$index];
-            $mdBottomSheet.hide(clickedItem);
+            $mdDialog.hide(clickedItem);
             $rootScope.$emit('addItem', clickedItem.category);
         };
+        $scope.imageItemClick = function ($index) {
+            var clickedItem = $scope.imageIds[$index];
+            $mdDialog.hide(clickedItem);
+            $rootScope.$emit('addImage', clickedItem.id);
+        };
     })
-    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdBottomSheet, $mdToast, $rootScope) {
+    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope) {
+        $scope.isOpen = false;
 
-        $scope.showGridBottomSheet = function () {
+        $scope.selectedMode = 'md-fling';
+
+        $scope.selectedDirection = 'up';
+
+        $scope.showTabDialog = function (ev) {
             $scope.alert = '';
-            $mdBottomSheet.show({
+            $mdDialog.show({
                 templateUrl: 'partials/bottom-sheet-grid-template.html',
-                controller: 'GridBottomSheetCtrl',
-                clickOutsideToClose: true
+                controller: 'DialogCtrl',
+                parent: 'SchemeEditCtrl',
+                targetEvent: ev,
+                clickOutsideToClose:true
             }).then(function (clickedItem) {
                 $mdToast.show(
                     $mdToast.simple()
@@ -517,6 +657,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
             ));
+
         myDiagram.nodeTemplateMap.add("Controller",
             $(go.Node, go.Panel.Spot, nodeStyle(),
                 new go.Binding("angle").makeTwoWay(),
@@ -542,6 +683,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
             ));
+
 
 
         myDiagram.linkTemplate =
@@ -644,6 +786,18 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             myDiagram.model.addNodeData({category: category, text: "Текст"});
             console.log(category);
         });
+
+
+        $rootScope.$on('addImage', function (event, id) {
+
+            myDiagram.add(
+                $(go.Part,
+                    $(go.Picture, "/scheme/getImageById?id=" + id)
+                ));
+            console.log(id);
+        });
+
+
 
 
     })

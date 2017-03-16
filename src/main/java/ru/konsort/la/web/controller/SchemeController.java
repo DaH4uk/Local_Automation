@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.konsort.la.persist.entity.*;
 import ru.konsort.la.persist.repo.FileRepo;
+import ru.konsort.la.persist.repo.ImageRepo;
 import ru.konsort.la.persist.repo.LinkDataRepo;
 import ru.konsort.la.persist.repo.NodeDataRepo;
 
@@ -33,6 +34,9 @@ public class SchemeController {
 
     @Autowired
     private FileRepo fileRepo;
+
+    @Autowired
+    private ImageRepo imageRepo;
 
 
     @RequestMapping(value = "/scheme/links", method = RequestMethod.GET)
@@ -72,50 +76,48 @@ public class SchemeController {
     }
 
     @RequestMapping(value = "/scheme/upload", method = RequestMethod.POST)
-    public void uploadImage(HttpServletRequest request, @RequestParam(value = "file") MultipartFile file) {
-        System.out.println(request.getParameterMap());
-
+    public void uploadImage(HttpServletRequest request, @RequestParam(value = "file") MultipartFile file) throws IOException {
+        Image image = new Image();
         final String fileName = file.getOriginalFilename();
 
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        String IMAGE_RESOURCE_PATH = File.separator+ "resources"+File.separator+"uploaded_images";
-        String directoryPath = request.getServletContext().getRealPath(IMAGE_RESOURCE_PATH + File.separator + fileName);
-        File uploadedFile = new File(directoryPath);
-        ru.konsort.la.persist.entity.File file1 = new ru.konsort.la.persist.entity.File();
-        file1.setFileName(directoryPath);
-        fileRepo.saveAndFlush(file1);
-        try {
-            outputStream = new FileOutputStream(uploadedFile);
-            inputStream = file.getInputStream();
-            write(inputStream, outputStream);
-            inputStream.close();
-            outputStream.flush();
-            outputStream.close();
+        image.setImageName(fileName);
+
+        image.setImg(file.getBytes());
+
+        imageRepo.saveAndFlush(image);
+
+    }
+
+    @RequestMapping(value = "/scheme/getImageIds", method = RequestMethod.GET)
+    public List getFiles(HttpServletResponse response) throws IOException {
+        return imageRepo.findAll();
+    }
+
+    @RequestMapping(value = "/scheme/getImageById", method = RequestMethod.GET)
+    public void getImage(@RequestParam(value = "id") Long id, HttpServletResponse response) throws IOException {
+
+        Image image = imageRepo.findById(id);
+        OutputStream outputStream = response.getOutputStream();
+
+        outputStream.write(image.getImg());
+        outputStream.flush();
+        outputStream.close();
+
+    }
+
+    private File convert(MultipartFile file) {
+        File convFile = new File(file.getOriginalFilename());
+
+        try (FileOutputStream fos = new FileOutputStream(convFile)) {
+            Boolean aBoolean = convFile.createNewFile();
+            fos.write(file.getBytes());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        return convFile;
     }
 
-    @RequestMapping(value = "/scheme/files", method = RequestMethod.GET)
-    public List<File> getFiles(HttpServletResponse response) throws IOException {
-        List<File> files = new ArrayList<File>();
-        for (ru.konsort.la.persist.entity.File filename : fileRepo.findAll()) {
-            files.add(new File(filename.getFileName()));
-        }
-        return files;
-    }
-
-    private void write(InputStream in, OutputStream out) {
-        byte[] buffer = new byte[1024];
-        int len;
-        try {
-            while ((len = in.read(buffer)) >= 0)
-                out.write(buffer, 0, len);
-        } catch (IOException e) {
-            e.getMessage();
-        }
-    }
 
 }

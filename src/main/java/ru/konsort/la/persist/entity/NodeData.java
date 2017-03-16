@@ -25,7 +25,7 @@ public class NodeData {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "pos", nullable = false)
+    @Column(name = "pos")
     private String pos;
 
     @Column(name = "text")

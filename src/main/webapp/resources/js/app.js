@@ -180,7 +180,6 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
 
     // Call when the the client is confirmed
     $rootScope.$on('event:auth-loginConfirmed', function (event, data) {
-        console.log('login confirmed start ' + data);
         $rootScope.loadingAccount = false;
         var nextLocation = ($rootScope.requestedUrl ? $rootScope.requestedUrl : "/home");
         var delay = ($location.path() === "/loading" ? 1500 : 0);

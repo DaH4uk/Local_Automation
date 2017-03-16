@@ -1,40 +1,51 @@
 package ru.konsort.la.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.konsort.la.model.RegisterData;
 import ru.konsort.la.service.ControllerService;
-import ru.konsort.la.service.HttpLocalServiceImpl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by turov on 14.02.2017.
  */
 @RestController
 public class DataController {
-    private ControllerService controllerService = ControllerService.getInstance();
-    HttpLocalServiceImpl httpLocalService = new HttpLocalServiceImpl();
+    @Autowired
+    private Environment environment;
 
     @RequestMapping(value = "/data", method = RequestMethod.GET)
-    public List<String> getKaratData(@RequestParam(required = true, value = "element") String elementName){
-        return controllerService.getData(elementName).getData();
+    public List<String> getKaratData(@RequestParam(value = "element") String elementName) {
+        String driverUrl = environment.getRequiredProperty("driver.address") + ":" + environment.getRequiredProperty("driver.port");
+        ControllerService controllerService = ControllerService.getInstance(driverUrl);
+        RegisterData data = controllerService.getData(elementName);
+        System.out.println("Object: " + elementName);
+        System.out.println("Data: " + data.getData());
+        System.out.println("Errors: " + data.getErrors());
+        if (data.getData() != null) {
+            return data.getData();
+        } else {
+            String error = data.getErrors();
+            List<String> e = new ArrayList<>();
+            e.add("Error: " + error);
+            return e;
+        }
     }
 
     @RequestMapping(value = "/set_data", method = RequestMethod.GET)
-    public void setData(@RequestParam(required = true, value = "element") String element,
-                        @RequestParam(required = true, value = "val") String value){
-        Map<String, String> urlMap = new HashMap<>();
-        urlMap.put("day_setpoint_rk1", "/cgi-bin/sauter.py?day_setpoint_rk1=");
-        urlMap.put("night_setpoint_rk1", "/cgi-bin/sauter.py?night_setpoint_rk1=");
-        urlMap.put("write_coil_57", "/cgi-bin/sauter.py?write_coil_57=");
-        urlMap.put("control_rk1", "/cgi-bin/sauter.py?control_rk1=");
-        httpLocalService.sendGet(urlMap.get(element)+value);
+    public String setData(@RequestParam(value = "element") String element,
+                          @RequestParam(value = "val") String value) {
+        String driverUrl = environment.getRequiredProperty("driver.address") + ":" + environment.getRequiredProperty("driver.port");
+
+        ControllerService controllerService = ControllerService.getInstance(driverUrl);
+
+        return controllerService.setData(element, value);
     }
 
 }

@@ -21,7 +21,7 @@ import javax.servlet.ServletContext;
 @Import({SecurityConfig.class})
 @EnableWebMvc
 @EnableSwagger2
-@ComponentScan(basePackages = { "ru.konsort.la.web.controller" })
+@ComponentScan(basePackages = { "ru.konsort.la.web.controller"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean

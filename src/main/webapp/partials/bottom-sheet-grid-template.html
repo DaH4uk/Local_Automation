@@ -1,17 +1,61 @@
-<md-bottom-sheet class="md-grid" layout="column">
-    <div layout="row" layout-align="center center" ng-cloak>
-        <h4>Добавить элемент</h4>
-    </div>
-    <div ng-cloak>
-        <md-list flex layout="row" layout-align="center center">
-            <md-list-item ng-repeat="item in items">
-                <div>
-                    <md-button class="md-grid-item-content" ng-click="listItemClick($index)">
-                        <img style="height: 24px; width: {{item.width}}px" src="resources/img/icons/scheme/{{item.icon}}.svg"/>
-                        <div class="md-grid-text"> {{ item.name }} </div>
-                    </md-button>
-                </div>
-            </md-list-item>
-        </md-list>
-    </div>
-</md-bottom-sheet>
+<md-dialog aria-label="Mango (Fruit)">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Добавление элемента</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon md-svg-src="resources/img/icons/ic_close_white_24px.svg" aria-label="Закрыть"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content style="max-width:800px;max-height:810px; ">
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="Элементы">
+                    <md-content layout-gt-sm="row" layout-padding>
+                        <div ng-repeat="item in items">
+                            <div flex-gt-xs="25" layout="row">
+
+                                <md-card md-theme-watch>
+                                    <md-card-actions layout="row" layout-align="end center">
+                                        <md-button class="md-grid-item-content" ng-click="listItemClick($index)">
+                                            <img style="height: 24px; width: {{item.width}}px"
+                                                 src="resources/img/icons/scheme/{{item.icon}}.svg"/>
+                                            <div class="md-grid-text"> {{ item.name }}</div>
+                                        </md-button>
+                                    </md-card-actions>
+                                </md-card>
+
+                            </div>
+                        </div>
+
+                    </md-content>
+                </md-tab>
+                <md-tab label="Изображения">
+                    <md-content layout-gt-sm="row" layout-padding>
+                        <div ng-if="imageIds.length == 0">
+                            Пока нет загруженных изображений
+                        </div>
+                        <div flex-xs flex-gt-xs="25" ng-if="imageIds != null" layout="column"
+                             ng-repeat="item in imageIds">
+                            <md-card md-theme-watch>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <md-button class="md-grid-item-content" ng-click="imageItemClick($index)">
+                                        <img style="width: 30%; height: 30%"
+                                             src="/scheme/getImageById?id={{item.id}}"/>
+                                        <div class="md-grid-text"> {{ item.name }}</div>
+                                    </md-button>
+                                </md-card-actions>
+                            </md-card>
+
+                        </div>
+
+                    </md-content>
+
+                </md-tab>
+
+            </md-tabs>
+        </md-dialog-content>
+
+    </form>
+</md-dialog>

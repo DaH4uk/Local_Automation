@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.stereotype.Service;
-import ru.konsort.la.config.ServiceConfig;
 import ru.konsort.la.model.RegisterData;
 
 import java.io.BufferedReader;
@@ -22,13 +21,12 @@ import java.util.List;
 @Service
 public class HttpLocalServiceImpl implements HttpLocalService {
     private JsonParser parser = new JsonParser();
-    private String driverUrl = new ServiceConfig().getDriverAddress();
-    private String driverPort = new ServiceConfig().getDriverPort();
 
 
     // HTTP GET request
-    public synchronized String sendGet(String urlPart) {
-        String url = sendGet(driverUrl + ":" + driverPort + urlPart);
+    synchronized String sendGet(String urlPart) {
+
+        String url = urlPart;
 
         URL obj = null;
         try {
@@ -41,7 +39,6 @@ public class HttpLocalServiceImpl implements HttpLocalService {
         try {
             assert obj != null;
             con = (HttpURLConnection) obj.openConnection();
-            System.out.println(con.getConnectTimeout());
             con.setRequestMethod("GET");
 
         } catch (IOException e) {
@@ -60,9 +57,7 @@ public class HttpLocalServiceImpl implements HttpLocalService {
                 response.append(inputLine);
             }
 
-            int subElementPosition = response.toString().lastIndexOf("{");
-
-            return response.toString().substring(subElementPosition);
+            return response.toString();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,7 +77,7 @@ public class HttpLocalServiceImpl implements HttpLocalService {
         if (jsonObject.get("Data") != null) {
             if (!jsonObject.get("Data").isJsonNull()) {
                 for (JsonElement o : jsonObject.get("Data").getAsJsonArray()) {
-                    data.add(o.getAsString());
+                    data.add(o.toString());
                 }
                 registerData.setData(data);
             }
