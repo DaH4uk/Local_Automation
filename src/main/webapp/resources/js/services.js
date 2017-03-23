@@ -169,19 +169,16 @@ myapp.service('TokensService', function ($log, $resource) {
 myapp.service('SchemeService', function ($log, $resource, $http) {
     return {
         getNodes: function () {
-            var qq = null;
-            $http.get('scheme/nodes', {}).then(function (response) {
-                qq = response.data;
-            });
-            return qq;
+                var nodesResource = $resource('scheme/nodes', {}, {
+                    query: {method: 'GET', params: {}, isArray: true}
+                });
+                return nodesResource.query();
         },
-
-
         getLinks: function () {
-            return $http.get('scheme/links', {}).then(function (response) {
-                var str = response.data;
-                return str;
-            })
+            var linksResource = $resource('scheme/links', {}, {
+                query: {method: 'GET', params: {}, isArray: true}
+            });
+            return linksResource.query();
         },
         getImagesIds: function () {
             var imagesResource = $resource('scheme/getImageIds/', {}, {

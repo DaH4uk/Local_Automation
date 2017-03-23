@@ -54,7 +54,7 @@ public class ControllerService {
 
     public String setData(String elementName, String value){
         String urlPart = registerUrlMap.get(elementName)+ "=" + value;
-        RegisterData registerData = httpLocalService.getControllerData(urlPart);
+        RegisterData registerData = httpLocalService.getControllerData(url + "/cgi-bin/" + urlPart);
         if (registerData.getErrors() != null){
             return "{\"Errors\": \"" + registerData.getErrors()+"\"}";
         } else {

@@ -41,10 +41,10 @@
                             <md-card md-theme-watch>
                                 <md-card-actions layout="row" layout-align="end center">
                                     <md-button class="md-grid-item-content" ng-click="imageItemClick($index)">
-                                        <img style="width: 30%; height: 30%"
-                                             src="/scheme/getImageById?id={{item.id}}"/>
-                                        <div class="md-grid-text"> {{ item.name }}</div>
+                                        <img aria-label="image" src="/scheme/getThumbnailImageById?id={{item.id}}"/>
+                                        <div class="md-grid-text"> {{ item.imageName }}</div>
                                     </md-button>
+
                                 </md-card-actions>
                             </md-card>
 

@@ -221,16 +221,6 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
     // Get already authenticated user account
     AuthSharedService.getAccount();
 
-    $rootScope.$on('$routeChangeSuccess', function () {
-        $http.get("scheme/nodes")
-            .success(function (response) {
-                $rootScope.nodes = response;
-            });
-        $http.get("scheme/links")
-            .success(function (response) {
-                $rootScope.links = response;
-            });
-    });
 });
 
 

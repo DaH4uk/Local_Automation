@@ -81,36 +81,38 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             right: true
         };
 
-        $scope.toastPosition = angular.extend({},last);
+        $scope.toastPosition = angular.extend({}, last);
 
-        $scope.getToastPosition = function() {
+        $scope.getToastPosition = function () {
             sanitizePosition();
 
             return Object.keys($scope.toastPosition)
-                .filter(function(pos) { return $scope.toastPosition[pos]; })
+                .filter(function (pos) {
+                    return $scope.toastPosition[pos];
+                })
                 .join(' ');
         };
 
         function sanitizePosition() {
             var current = $scope.toastPosition;
 
-            last = angular.extend({},current);
+            last = angular.extend({}, current);
         }
 
 
-        var showToast = function(msg, delay) {
+        var showToast = function (msg, delay) {
             var pinTo = $scope.getToastPosition();
 
             $mdToast.show(
                 $mdToast.simple()
                     .textContent(msg)
-                    .position(pinTo )
-                    .hideDelay(delay*1000)
+                    .position(pinTo)
+                    .hideDelay(delay * 1000)
             );
         };
 
         DataService.getKaratData().$promise.then(function (res) {
-            if (res[0].indexOf('Error')+1){
+            if (res[0].indexOf('Error') + 1) {
                 showToast("Не удалось загрузить значения регистров для Карат-307. Произошла ошибка: " + res[0], 15);
                 $scope.KaratError = "Произошла ошибка при загрузке данных: " + res[0]
             } else {
@@ -125,7 +127,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $scope.karatDataLoading = false;
         });
         DataService.getSauterDayTemp().$promise.then(function (res) {
-            if (res[0].indexOf('Error')+1){
+            if (res[0].indexOf('Error') + 1) {
                 showToast("Не удалось загрузить значение дневной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
                 $scope.sauterDayDisabled = true;
             } else {
@@ -137,7 +139,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $scope.sauterDayloading = false;
         });
         DataService.getSauterNightTemp().$promise.then(function (res) {
-            if (res[0].indexOf('Error')+1){
+            if (res[0].indexOf('Error') + 1) {
                 showToast("Не удалось загрузить значение ночной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
                 $scope.sauterNightDisabled = true;
 
@@ -149,7 +151,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $scope.sauterNightLoading = false;
         });
         DataService.getSauterCoilVal().$promise.then(function (res) {
-            if (res[0].indexOf('Error')+1){
+            if (res[0].indexOf('Error') + 1) {
                 showToast("Не удалось загрузить положение насоса для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
                 $scope.coilDisabled = true;
 
@@ -174,22 +176,22 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         $scope.setSauterDayTemp = function () {
             $scope.sauterDayloading = true;
             DataService.setSauterDayVal($scope.sauterDayTemp[0]).$promise.then(function (res) {
-                if (res.Errors == "Complete"){
+                if (res.Errors == "Complete") {
                     showToast("Значение дневной уставки для SAUTER EQJV125 успешно установлено!", 3);
                 } else {
-                    showToast("Не удалось установить значение дневной уставки для SAUTER EQJV125. \n Поизошла ошибка: "+ res.Errors, 15);
+                    showToast("Не удалось установить значение дневной уставки для SAUTER EQJV125. \n Поизошла ошибка: " + res.Errors, 15);
                 }
                 $scope.sauterDayloading = false;
             });
         };
         $scope.setSauterNightTemp = function () {
             var tmp =
-            $scope.sauterNightLoading = true;
+                $scope.sauterNightLoading = true;
             DataService.setSauterNightVal($scope.sauterNightTemp[0]).$promise.then(function (res) {
-                if (res.Errors == "Complete"){
+                if (res.Errors == "Complete") {
                     showToast("Значение ночной уставки для SAUTER EQJV125 успешно установлено!", 3);
                 } else {
-                    showToast("Не удалось установить значение ночной уставки для SAUTER EQJV125. \n Поизошла ошибка: "+ res.Errors, 15);
+                    showToast("Не удалось установить значение ночной уставки для SAUTER EQJV125. \n Поизошла ошибка: " + res.Errors, 15);
                 }
                 $scope.sauterNightLoading = false;
             });
@@ -201,10 +203,10 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $scope.sauterCoilLoading = true;
 
             DataService.setSauterCoilVal($scope.sauterCoilVal).$promise.then(function (res) {
-                if (res.Errors == "Complete"){
+                if (res.Errors == "Complete") {
                     showToast("Положение насоса для SAUTER EQJV125 успешно установлено!", 3);
                 } else {
-                    showToast("Не удалось установить положение насоса для SAUTER EQJV125. Поизошла ошибка: "+ res.Errors, 15);
+                    showToast("Не удалось установить положение насоса для SAUTER EQJV125. Поизошла ошибка: " + res.Errors, 15);
                 }
                 $scope.sauterCoilLoading = false;
             });
@@ -212,15 +214,14 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         $scope.setSauterControlVal = function () {
             DataService.setSauterControlVal($scope.controlVal).$promise.then(function (res) {
-                if (res.Errors == "Complete"){
+                if (res.Errors == "Complete") {
                     showToast("Положение трехпозиционного клапана для SAUTER EQJV125 успешно установлено!", 3);
                 } else {
-                    showToast("Не удалось установить положение трехпозиционного клапана для SAUTER EQJV125. Поизошла ошибка: "+ res.Errors, 15);
+                    showToast("Не удалось установить положение трехпозиционного клапана для SAUTER EQJV125. Поизошла ошибка: " + res.Errors, 15);
                 }
 
             });
         };
-
 
 
     })
@@ -392,8 +393,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         SchemeService.getImagesIds().$promise.then(function (res) {
             $scope.imageIds = res;
         });
-        var a = [];
-        a.length
 
         $scope.cancel = function () {
             $mdDialog.hide();
@@ -410,7 +409,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $rootScope.$emit('addImage', clickedItem.id);
         };
     })
-    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope) {
+    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope, SchemeService) {
         $scope.isOpen = false;
 
         $scope.selectedMode = 'md-fling';
@@ -424,11 +423,17 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 controller: 'DialogCtrl',
                 parent: 'SchemeEditCtrl',
                 targetEvent: ev,
-                clickOutsideToClose:true
+                clickOutsideToClose: true
             }).then(function (clickedItem) {
+                var itemName;
+                if (clickedItem['name']) {
+                    itemName = clickedItem['name'];
+                } else {
+                    itemName = 'изображение'
+                }
                 $mdToast.show(
                     $mdToast.simple()
-                        .textContent("Объект " + clickedItem['name'] + ' добавлен!')
+                        .textContent("Объект " + itemName + ' добавлен!')
                         .position('top right')
                         .hideDelay(1500)
                 );
@@ -607,6 +612,15 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
             ));
+
+        var addImagesToTemplateMap = function (id) {
+            myDiagram.nodeTemplateMap.add("image" + id,
+                $(go.Part,
+                    $(go.Picture, "/scheme/getImageById?id=" + id)
+                ));
+        };
+
+
         myDiagram.nodeTemplateMap.add("MeteringDevice2",
             $(go.Node, go.Panel.Spot, nodeStyle(),
                 new go.Binding("angle").makeTwoWay(),
@@ -633,9 +647,12 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("R", go.Spot.Right, true, true)
             ));
         myDiagram.nodeTemplateMap.add("Pump",
-            $(go.Node, go.Panel.Spot, nodeStyle(),
+            $(go.Node, go.Panel.Spot,
                 new go.Binding("angle").makeTwoWay(),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Shape, "Circle",
+                    {fill: "#ACE600", stroke: null, desiredSize: new go.Size(50, 50)},
+                    new go.Binding("fill", "color")),
                 $(go.Picture, {
                     desiredSize: new go.Size(50, 50),
                     source: "/resources/img/icons/scheme/pump.svg",
@@ -649,14 +666,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                         editable: true,
                         alignment: new go.Spot(0.5, 1.3)
                     },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true)
-            ));
+                    new go.Binding("text").makeTwoWay()
+                )));
 
         myDiagram.nodeTemplateMap.add("Controller",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -683,7 +694,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
             ));
-
 
 
         myDiagram.linkTemplate =
@@ -734,25 +744,38 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 })
             );
 
-        for (var i = 0; i < $scope.nodes.length; i++) {
-            var obj = $scope.nodes[i];
-            if (obj.category == null) {
-                delete(obj.category);
-            }
-            if (obj.angle == null) {
-                delete (obj.angle);
-            }
-        }
-
-        for (var i = 0; i < $scope.links.length; i++) {
-            var obj = $scope.links[i];
-            if (obj.color == null) {
-                delete(obj.color);
-            }
-        }
+        SchemeService.getLinks().$promise.then(function (links) {
+            $scope.links = links;
+            SchemeService.getNodes().$promise.then(function (nodes) {
+                $scope.nodes = nodes;
+                SchemeService.getImagesIds().$promise.then(function (res) {
+                    res.forEach(function (val) {
+                        addImagesToTemplateMap(val.id);
+                    });
 
 
-        myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+                    for (var i = 0; i < $scope.nodes.length; i++) {
+                        var obj = $scope.nodes[i];
+                        if (obj.category == null) {
+                            delete(obj.category);
+                        }
+                        if (obj.angle == null) {
+                            delete (obj.angle);
+                        }
+                    }
+
+                    for (var i = 0; i < $scope.links.length; i++) {
+                        var obj = $scope.links[i];
+                        if (obj.color == null) {
+                            delete(obj.color);
+                        }
+                    }
+                    myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+                });
+            });
+        });
+
+
         // animate some flow through the pipes
 
 
@@ -784,24 +807,41 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         $rootScope.$on('addItem', function (event, category) {
             myDiagram.model.addNodeData({category: category, text: "Текст"});
-            console.log(category);
         });
 
 
         $rootScope.$on('addImage', function (event, id) {
-
-            myDiagram.add(
-                $(go.Part,
-                    $(go.Picture, "/scheme/getImageById?id=" + id)
-                ));
-            console.log(id);
+            myDiagram.model.addNodeData({category: "image" + id});
         });
 
 
-
-
     })
-    .controller('SchemeViewCtrl', function ($scope) {
+    .controller('SchemeViewCtrl', function ($scope, SchemeService, DataService, $mdToast) {
+
+        var last = {
+            bottom: false,
+            top: true,
+            left: false,
+            right: true
+        };
+        $scope.toastPosition = angular.extend({}, last);
+
+
+        function sanitizePosition() {
+            var current = $scope.toastPosition;
+
+            last = angular.extend({}, current);
+        }
+
+        $scope.getToastPosition = function () {
+            sanitizePosition();
+
+            return Object.keys($scope.toastPosition)
+                .filter(function (pos) {
+                    return $scope.toastPosition[pos];
+                })
+                .join(' ');
+        };
 
         var $ = go.GraphObject.make; // for more concise visual tree definitions
         var myDiagram =
@@ -944,16 +984,52 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
             ));
+
+        var changePumpColor = function (color) {
+            var arr = myDiagram.model.nodeDataArray;
+
+            for (var i = 0; i < arr.length; i++) {
+                var data = arr[i];
+
+                if (data.category == "Pump") {
+                    data.color = color;
+                    myDiagram.model.updateTargetBindings(data);
+                }
+            }
+        };
+        var changePumpState = function () {
+            console.log($scope.sauterCoilVal);
+            if ($scope.sauterCoilVal == 1) {
+                DataService.setSauterCoilVal(0).$promise.then(function (res) {
+                    changePumpColor("#dd0006");
+                    $scope.sauterCoilVal = 0;
+                    showToast("Насос выключен");
+                });
+            } else {
+                DataService.setSauterCoilVal(1).$promise.then(function (res) {
+                    changePumpColor("#15dd00");
+                    $scope.sauterCoilVal = 1;
+
+                    showToast("Насос включен");
+                });
+            }
+        };
         myDiagram.nodeTemplateMap.add("Pump",
-            $(go.Node, go.Panel.Spot, nodeStyle(),
+            $(go.Node, go.Panel.Spot,
                 new go.Binding("angle").makeTwoWay(),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Shape, "Circle",
+                    {fill: "#ffffff", stroke: null, desiredSize: new go.Size(50, 50)},
+                    new go.Binding("fill", "color")),
                 $(go.Picture, {
                     desiredSize: new go.Size(50, 50),
                     source: "/resources/img/icons/scheme/pump.svg",
                     alignment: new go.Spot(0.5, 0.5),
                     fromSpot: go.Spot.Right,  // port properties go on the port!
-                    toSpot: go.Spot.Left
+                    toSpot: go.Spot.Left,
+                    click: function () {
+                        changePumpState();
+                    }
                 }),
                 $(go.TextBlock, {
                         textAlign: "center",
@@ -961,14 +1037,9 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                         editable: true,
                         alignment: new go.Spot(0.5, 1.3)
                     },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true)
-            ));
+                    new go.Binding("text").makeTwoWay()
+                )));
+
         myDiagram.nodeTemplateMap.add("Controller",
             $(go.Node, go.Panel.Spot, nodeStyle(),
                 new go.Binding("angle").makeTwoWay(),
@@ -994,6 +1065,14 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true)
             ));
+
+
+        var addImagesToTemplateMap = function (id) {
+            myDiagram.nodeTemplateMap.add("image" + id,
+                $(go.Part,
+                    $(go.Picture, "/scheme/getImageById?id=" + id)
+                ));
+        };
 
 
         myDiagram.linkTemplate =
@@ -1034,42 +1113,72 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     strokeDashArray: [20, 40]
                 })
             );
-        for (var i = 0; i < $scope.nodes.length; i++) {
-            var obj = $scope.nodes[i];
-            if (obj.category == null) {
-                delete(obj.category);
-            }
-            if (obj.angle == null) {
-                delete (obj.angle);
-            }
-        }
 
-        for (var i = 0; i < $scope.links.length; i++) {
-            var obj = $scope.links[i];
-            if (obj.color == null) {
-                delete(obj.color);
-            }
-        }
+        SchemeService.getLinks().$promise.then(function (links) {
+            $scope.links = links;
+            SchemeService.getNodes().$promise.then(function (nodes) {
+                $scope.nodes = nodes;
+                SchemeService.getImagesIds().$promise.then(function (res) {
+                    res.forEach(function (val) {
+                        addImagesToTemplateMap(val.id);
+                    });
 
 
-        myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
-        // animate some flow through the pipes
-        loop(); // animate some flow through the pipes
+                    for (var i = 0; i < $scope.nodes.length; i++) {
+                        var obj = $scope.nodes[i];
+                        if (obj.category == null) {
+                            delete(obj.category);
+                        }
+                        if (obj.angle == null) {
+                            delete (obj.angle);
+                        }
+                    }
 
-        function loop() {
-            var diagram = myDiagram;
-            setTimeout(function () {
-                var oldskips = diagram.skipsUndoManager;
-                diagram.skipsUndoManager = true;
-                diagram.links.each(function (link) {
-                    var shape = link.findObject("PIPE");
-                    var off = shape.strokeDashOffset - 2;
-                    shape.strokeDashOffset = (off <= 0) ? 60 : off;
+                    for (var i = 0; i < $scope.links.length; i++) {
+                        var obj = $scope.links[i];
+                        if (obj.color == null) {
+                            delete(obj.color);
+                        }
+                    }
+                    myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+                    getSauterCoilData();
                 });
-                diagram.skipsUndoManager = oldskips;
-                loop();
-            }, 60);
-        }
+            });
+        });
+
+        var showToast = function (msg, delay) {
+            var pinTo = $scope.getToastPosition();
+
+            $mdToast.show(
+                $mdToast.simple()
+                    .textContent(msg)
+                    .position(pinTo)
+                    .hideDelay(delay * 1000)
+            );
+        };
+
+        var getSauterCoilData = function () {
+            DataService.getSauterCoilVal().$promise.then(function (res) {
+                if (res[0].indexOf('Error') + 1) {
+                    showToast("Не удалось загрузить положение насоса для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
+
+                } else {
+                    console.log(res[0]);
+                    if (res[0] === 'true') {
+                        changePumpColor("#15dd00");
+                        $scope.sauterCoilVal = 1;
+                    } else {
+                        changePumpColor("#dd0006");
+                        $scope.sauterCoilVal = 0;
+                    }
+                    showToast("Положение насоса для SAUTER EQJV125 успешно загружено!", 3);
+                }
+
+
+                $scope.sauterCoilLoading = false;
+            });
+        };
+
 
     })
     .controller('ApiDocController', function ($scope) {
