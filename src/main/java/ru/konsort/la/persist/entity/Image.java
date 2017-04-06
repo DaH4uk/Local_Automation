@@ -25,6 +25,9 @@ public class Image {
     @Column(name = "img", nullable = false)
     private byte[] img;
 
+    @Column(name = "scheme_id", nullable = false)
+    private Long schemeId;
+
     public Long getId() {
         return id;
     }
@@ -47,5 +50,13 @@ public class Image {
 
     public void setImg(byte[] img) {
         this.img = img;
+    }
+
+    public Long getSchemeId() {
+        return schemeId;
+    }
+
+    public void setSchemeId(Long schemeId) {
+        this.schemeId = schemeId;
     }
 }

@@ -36,12 +36,14 @@ CREATE TABLE LINK_DATA (
 );
 
 CREATE TABLE NODE_DATA(
-  id SERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY NOT NULL,
   key VARCHAR(30) NOT NULL,
   category VARCHAR(50),
   pos VARCHAR(100) NOT NULL,
   text VARCHAR(255),
-  angle INT
+  angle INT,
+  scheme_id INTEGER,
+  CONSTRAINT node_data_schemes_id_fk FOREIGN KEY (sheme_id) REFERENCES schemes (id)
 );
 
 CREATE TABLE UPLOADED_FILES (
@@ -52,5 +54,11 @@ CREATE TABLE UPLOADED_FILES (
 CREATE TABLE images (
   id SERIAL PRIMARY KEY,
   image_name TEXT,
-  img BYTEA
+  img BYTEA,
+  scheme_id INT NOT NULL;
+);
+
+CREATE TABLE schemes (
+  id SERIAL PRIMARY KEY ,
+  scheme_name TEXT
 );

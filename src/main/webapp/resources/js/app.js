@@ -11,7 +11,7 @@ myapp.constant('USER_ROLES', {
 });
 
 
-myapp.config(function ($routeProvider, USER_ROLES) {
+myapp.config(function ($routeProvider, USER_ROLES, $locationProvider) {
 
     $routeProvider.when("/home", {
         templateUrl: "partials/home.html",
@@ -22,7 +22,7 @@ myapp.config(function ($routeProvider, USER_ROLES) {
         }
     }).when('/', {
         redirectTo: '/home'
-    }).when('/schemeView', {
+    }).when('/schemeView/:id', {
         templateUrl: 'partials/schemeView.html',
         controller: 'SchemeViewCtrl',
         access: {
@@ -36,7 +36,7 @@ myapp.config(function ($routeProvider, USER_ROLES) {
             loginRequired: true,
             authorizedRoles: [USER_ROLES.admin]
         }
-    }).when('/schemeEdit',{
+    }).when('/schemeEdit/:id',{
         templateUrl: 'partials/schemeEdit.html',
         controller: 'SchemeEditCtrl',
         access: {

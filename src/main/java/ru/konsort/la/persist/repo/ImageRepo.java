@@ -8,4 +8,8 @@ import ru.konsort.la.persist.entity.User;
 public interface ImageRepo extends JpaRepository<Image, Long> {
     Image findById(Long id);
 
+    Image findBySchemeId(Long id);
+
+    Image deleteBySchemeId(Long id);
+
 }

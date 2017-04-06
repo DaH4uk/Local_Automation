@@ -1,28 +1,22 @@
 package ru.konsort.la.web.controller;
 
+import com.google.gson.Gson;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.konsort.la.persist.entity.*;
-import ru.konsort.la.persist.repo.FileRepo;
-import ru.konsort.la.persist.repo.ImageRepo;
-import ru.konsort.la.persist.repo.LinkDataRepo;
-import ru.konsort.la.persist.repo.NodeDataRepo;
+import ru.konsort.la.persist.repo.*;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,7 +34,7 @@ public class SchemeController {
     private NodeDataRepo nodeDataRepo;
 
     @Autowired
-    private FileRepo fileRepo;
+    private SchemesRepo schemesRepo;
 
     @Autowired
     private ImageRepo imageRepo;
@@ -72,27 +66,46 @@ public class SchemeController {
     }
 
     @RequestMapping(value = "/scheme/nodes", method = RequestMethod.POST)
-    public
     @ResponseBody
-    List<NodeData> saveNodeDataList(@RequestBody List<NodeData> nodeDataList) {
+    public List<NodeData> saveNodeDataList(@RequestBody List<NodeData> nodeDataList, @RequestParam(value = "schemeId") Long schemeId) {
+        List<NodeData> nodeData = nodeDataRepo.findBySchemeId(schemeId);
+        for (NodeData oldNodes : nodeData) {
+            nodeDataRepo.delete(oldNodes.getId());
+        }
+
+        for (NodeData newNodes : nodeDataList) {
+            newNodes.setSchemeId(schemeId);
+        }
         logger.debug("save nodeDataList");
-        nodeDataRepo.deleteAll();
         nodeDataRepo.save(nodeDataList);
         nodeDataRepo.flush();
         return nodeDataList;
     }
 
     @RequestMapping(value = "/scheme/upload", method = RequestMethod.POST)
-    public void uploadImage(HttpServletRequest request, @RequestParam(value = "file") MultipartFile file) throws IOException {
+    public void uploadImage(HttpServletRequest request,
+                            @RequestParam(value = "file") MultipartFile file,
+                            @RequestParam(value = "schemeId") Long schemeId) throws IOException {
         Image image = new Image();
         final String fileName = file.getOriginalFilename();
-
         image.setImageName(fileName);
-
         image.setImg(file.getBytes());
-
+        image.setSchemeId(schemeId);
+        Image tmpImg = imageRepo.findBySchemeId(schemeId);
+        if (tmpImg != null) {
+            imageRepo.delete(imageRepo.findBySchemeId(schemeId));
+        }
         imageRepo.saveAndFlush(image);
+    }
 
+    @RequestMapping(value = "/scheme/getImgBySchemeId", method = RequestMethod.GET)
+    public void getImgBySchemeId(@RequestParam(value = "schemeId") Long schemeId, HttpServletResponse response) throws IOException {
+        Image image = imageRepo.findBySchemeId(schemeId);
+        OutputStream outputStream = response.getOutputStream();
+
+        outputStream.write(image.getImg());
+        outputStream.flush();
+        outputStream.close();
     }
 
     @RequestMapping(value = "/scheme/getImageIds", method = RequestMethod.GET)
@@ -131,19 +144,22 @@ public class SchemeController {
         outputStream.close();
     }
 
-    private File convert(MultipartFile file) {
-        File convFile = new File(file.getOriginalFilename());
-
-        try (FileOutputStream fos = new FileOutputStream(convFile)) {
-            Boolean aBoolean = convFile.createNewFile();
-            fos.write(file.getBytes());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return convFile;
+    @RequestMapping(value = "/scheme/create", method = RequestMethod.GET)
+    public String createNewScheme(@RequestParam(value = "name") String schemeName) {
+        Scheme scheme = new Scheme();
+        scheme.setSchemeName(schemeName);
+        schemesRepo.saveAndFlush(scheme);
+        return "{\"schemeId\": " + scheme.getId() + "}";
     }
 
+    @RequestMapping(value = "/scheme/getAll", method = RequestMethod.GET)
+    public List<Scheme> getSchemeList() {
+        return schemesRepo.findAll();
+    }
+
+    @RequestMapping(value = "/scheme/getNodesByScheme", method = RequestMethod.GET)
+    public List<NodeData> getNodesByScheme(@RequestParam(value = "scheme_id") Long schemeId) {
+        return nodeDataRepo.findBySchemeId(schemeId);
+    }
 
 }

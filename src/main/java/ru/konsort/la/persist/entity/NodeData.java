@@ -34,6 +34,10 @@ public class NodeData {
     @Column(name = "angle")
     private Integer angle;
 
+    @JsonIgnore
+    @Column(name = "scheme_id")
+    private Long schemeId;
+
     public Long getId() {
         return id;
     }
@@ -80,5 +84,13 @@ public class NodeData {
 
     public void setAngle(Integer angle) {
         this.angle = angle;
+    }
+
+    public Long getSchemeId() {
+        return schemeId;
+    }
+
+    public void setSchemeId(Long schemeId) {
+        this.schemeId = schemeId;
     }
 }

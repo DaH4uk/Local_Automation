@@ -168,11 +168,11 @@ myapp.service('TokensService', function ($log, $resource) {
 
 myapp.service('SchemeService', function ($log, $resource, $http) {
     return {
-        getNodes: function () {
-                var nodesResource = $resource('scheme/nodes', {}, {
-                    query: {method: 'GET', params: {}, isArray: true}
-                });
-                return nodesResource.query();
+        getNodes: function (schemeId) {
+            var nodesResource = $resource('scheme/getNodesByScheme', {}, {
+                query: {method: 'GET', params: {scheme_id: schemeId}, isArray: true}
+            });
+            return nodesResource.query();
         },
         getLinks: function () {
             var linksResource = $resource('scheme/links', {}, {
@@ -185,6 +185,24 @@ myapp.service('SchemeService', function ($log, $resource, $http) {
                 query: {method: 'GET', params: {}, isArray: true}
             });
             return imagesResource.query();
+        },
+        addScheme: function (schemeName) {
+            var schemeResource = $resource('scheme/create', {}, {
+                query: {method: 'GET', params: {name: schemeName}, isArray: false}
+            });
+            return schemeResource.query();
+        },
+        getAllSchemes: function () {
+            var schemeResource = $resource('scheme/getAll', {}, {
+                query: {method: 'GET', params: {}, isArray: true}
+            });
+            return schemeResource.query();
+        },
+        saveNodes: function (schemeId, nodeDataList) {
+            var schemeResource = $resource("scheme/nodes?schemeId="+schemeId, {}, {
+                query: {method: 'POST', params: {}, isArray:true}
+            });
+            return schemeResource.save(nodeDataList);
         }
     }
 });

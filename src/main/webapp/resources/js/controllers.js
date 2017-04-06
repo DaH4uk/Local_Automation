@@ -26,33 +26,10 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
     .controller('UsersController', function ($scope, $log, UsersService) {
         $scope.users = UsersService.getAll();
     })
-    .controller('LeftCtrl', function ($scope, $timeout, $mdSidenav) {
-        $scope.menu_items = [{
-            name: 'Главная',
-            href: '#/home',
-            imageUrl: 'resources/img/icons/ic_home_white_24px.svg'
-        }, {
-            name: 'Принципиальная схема',
-            href: '#/schemeView',
-            imageUrl: 'resources/img/icons/ic_device_hub_white_24px.svg'
-        }, {
-            name: "Доступ к данным",
-            href: "#/dataView",
-            imageUrl: "resources/img/icons/ic_view_list_black_24px.svg"
-        }, {
-            name: 'Пользователи',
-            href: '#/users',
-            imageUrl: 'resources/img/icons/ic_supervisor_account_white_24px.svg'
-        }, {
-            name: 'Документация API',
-            href: '#/apiDoc',
-            imageUrl: 'resources/img/icons/ic_description_white_24px.svg'
-        }, {
-            name: 'Сессии',
-            href: '#/tokens',
-            imageUrl: 'resources/img/icons/ic_transfer_within_a_station_white_24px.svg'
-        }
-        ];
+    .controller('LeftCtrl', function ($scope, $timeout, $mdSidenav, $mdDialog, SchemeService, $location, $window) {
+        SchemeService.getAllSchemes().$promise.then(function (res) {
+            $scope.schemes = res;
+        });
 
         $scope.close = function () {
             // Component lookup should always be available since we are not using `ng-if`
@@ -62,6 +39,28 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         $scope.go = function (item) {
             close();
             location.href = item.url;
+        };
+
+        $scope.addScheme = function (ev) {
+            // Appending dialog to document.body to cover sidenav in docs app
+            var confirm = $mdDialog.prompt()
+                .title('Введите имя новой схемы')
+                .placeholder('Название схемы')
+                .ariaLabel('Название схемы')
+                .targetEvent(ev)
+                .ok('Готово')
+                .cancel('Отмена');
+
+            $mdDialog.show(confirm).then(function (result) {
+                SchemeService.addScheme(result).$promise.then(function (resId) {
+                        $location.path("/schemeEdit/" + resId.schemeId);
+                        $window.location.reload();
+                    }
+                );
+                $scope.close();
+            }, function () {
+                $scope.close();
+            });
         }
     })
     .controller('DataViewCtrl', function ($scope, $mdToast, DataService) {
@@ -197,7 +196,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             });
         };
         $scope.setSauterCoil = function () {
-            console.log($scope.sauterCoilVal);
 
 
             $scope.sauterCoilLoading = true;
@@ -225,61 +223,37 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
 
     })
-    .controller('ImgUplDlgCtrl', function ($scope, $http, $mdDialog) {
-        $scope.showProgress = false;
-
+    .controller('ImgUplDlgCtrl', function ($scope, $http, $mdDialog, $location, $rootScope) {
         $scope.upload = function () {
-            $scope.showProgress = true;
-            $scope.progress = 0;
+            var path = $location.path()+"";
+            var schemeId = path.split("/");
+
             var formData = new FormData();
-            $scope.progress = 10;
 
             angular.forEach($scope.files, function (obj) {
                 if (!obj.isRemote) {
                     formData.append('file', obj.lfFile);
                 }
-                $scope.progress = 30;
             });
 
             var request = new XMLHttpRequest();
-            request.open('POST', './scheme/upload');
-            $scope.progress = 70;
-
+            request.open('POST', './scheme/upload?schemeId=' + schemeId[2]);
             request.send(formData);
-            $scope.progress = 100;
+            $rootScope.$emit("uploadImage");
+            $scope.hide();
 
 
         };
 
         $scope.hide = function () {
             $mdDialog.hide();
-            $http({
-                method: 'GET',
-                url: '/scheme/files'
-            }).then(function successCallback(response) {
-                var images = [];
-                response.data.forEach(function (value) {
-                    console.log(value);
-                });
-
-                console.log(images);
-            }, function errorCallback(response) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-
         };
-
-        $scope.cancel = function () {
-            $mdDialog.cancel();
-        };
-
-
     })
-    .controller('NavbarCtrl', function ($rootScope, $timeout, $mdSidenav, $scope, $location, $mdDialog, $http) {
+    .controller('NavbarCtrl', function ($rootScope, $timeout, $mdSidenav, $scope, $location, $mdDialog, $http, SchemeService) {
 
         $rootScope.$on("$routeChangeSuccess", function () {
-            $scope.showRightMenu = $location.path() === '/schemeEdit';
+            var loc = $location.path() + "";
+            $scope.showRightMenu = loc.indexOf("schemeEdit") === 1;
         });
 
         $scope.undo = function (event) {
@@ -296,14 +270,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 templateUrl: 'partials/upload_dialog.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
-                clickOutsideToClose: true,
-                fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
-            })
-                .then(function (answer) {
-                    $scope.status = 'You said the information was "' + answer + '".';
-                }, function () {
-                    $scope.status = 'You cancelled the dialog.';
-                });
+                clickOutsideToClose: true
+            });
         };
 
         var dialog = function (title, message, ev) {
@@ -333,30 +301,32 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         $scope.saveScheme = function (ev) {
             $rootScope.$emit('getDiagram');
             var diagram = JSON.parse($rootScope.diagram);
+            var loc = $location.path() + "";
+            var schemeId = loc.substring(12);
 
-
-            $http.post("/scheme/links", diagram.linkDataArray);
-
-            $http.post("/scheme/nodes", diagram.nodeDataArray)
-                .success(function (ev) {
-                    $rootScope.$emit('diagramSaved');
-                    var confirm = $mdDialog.confirm()
-                        .title('Сохранение')
-                        .textContent('Данные успешно сохранены! Продолжить редактирование или вернуться к просмотру схемы?')
-                        .targetEvent(ev)
-                        .ok('Продолжить')
-                        .cancel('Вернуться к просмотру');
-                    $mdDialog.show(confirm).then(function () {
-                    }, function () {
-                        $scope.exitEdit(ev);
-                    });
+            function showDialog(ev) {
+                $rootScope.$emit('diagramSaved');
+                var confirm = $mdDialog.confirm()
+                    .title('Сохранение')
+                    .textContent('Данные успешно сохранены! Продолжить редактирование или вернуться к просмотру схемы?')
+                    .targetEvent(ev)
+                    .ok('Продолжить')
+                    .cancel('Вернуться к просмотру');
+                $mdDialog.show(confirm).then(function () {
+                }, function () {
+                    $scope.exitEdit(ev);
                 });
+            }
+
+            SchemeService.saveNodes(schemeId, diagram.nodeDataArray).$promise.then(showDialog(ev));
+
 
         }
         ;
 
         $scope.exitEdit = function (event) {
-            $location.path('/schemeView');
+            var loc = $location.path() + "";
+            $location.path('/schemeView/' + loc.substring(12));
         };
         var originatorEv;
 
@@ -380,7 +350,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
 
     })
-    .controller('DialogCtrl', function ($scope, $mdDialog, $rootScope, SchemeService) {
+    .controller('DialogCtrl', function ($scope, $mdDialog, $rootScope, SchemeService, $mdBottomSheet) {
         $scope.items = [
             {name: "Кран", icon: "valve", category: "Valve", width: "24"},
             {name: "Расходомер", icon: "flowmeter", category: "Flowmeter", width: "24"},
@@ -400,51 +370,41 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         $scope.listItemClick = function ($index) {
             var clickedItem = $scope.items[$index];
-            $mdDialog.hide(clickedItem);
+            $mdBottomSheet.hide(clickedItem);
             $rootScope.$emit('addItem', clickedItem.category);
         };
-        $scope.imageItemClick = function ($index) {
-            var clickedItem = $scope.imageIds[$index];
-            $mdDialog.hide(clickedItem);
-            $rootScope.$emit('addImage', clickedItem.id);
-        };
     })
-    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope, SchemeService) {
+    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope, SchemeService, $routeParams, $mdBottomSheet, $window) {
+        var schemeId = $routeParams.id;
+
         $scope.isOpen = false;
 
         $scope.selectedMode = 'md-fling';
 
         $scope.selectedDirection = 'up';
 
+
         $scope.showTabDialog = function (ev) {
             $scope.alert = '';
-            $mdDialog.show({
+            $mdBottomSheet.show({
                 templateUrl: 'partials/bottom-sheet-grid-template.html',
                 controller: 'DialogCtrl',
-                parent: 'SchemeEditCtrl',
-                targetEvent: ev,
                 clickOutsideToClose: true
             }).then(function (clickedItem) {
+
                 var itemName;
                 if (clickedItem['name']) {
                     itemName = clickedItem['name'];
                 } else {
                     itemName = 'изображение'
                 }
-                $mdToast.show(
-                    $mdToast.simple()
-                        .textContent("Объект " + itemName + ' добавлен!')
-                        .position('top right')
-                        .hideDelay(1500)
-                );
+
             });
         };
 
         var $ = go.GraphObject.make; // for more concise visual tree definitions
         var myDiagram =
             $(go.Diagram, "editDiagram", {
-                "grid.visible": true,
-                "grid.gridCellSize": new go.Size(30, 20),
                 "draggingTool.isGridSnapEnabled": true,
                 "resizingTool.isGridSnapEnabled": true,
                 initialContentAlignment: go.Spot.Center,
@@ -559,7 +519,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("R", new go.Spot(1.1, 0.25), true, true)
             ));
 
-
         myDiagram.nodeTemplateMap.add("Flowmeter",
             $(go.Node, go.Panel.Spot, nodeStyle(),  // or "Spot"
                 new go.Binding("angle").makeTwoWay(),
@@ -613,12 +572,10 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 makePort("R", go.Spot.Right, true, true)
             ));
 
-        var addImagesToTemplateMap = function (id) {
-            myDiagram.nodeTemplateMap.add("image" + id,
-                $(go.Part,
-                    $(go.Picture, "/scheme/getImageById?id=" + id)
-                ));
-        };
+        myDiagram.nodeTemplateMap.add("image",
+            $(go.Part,
+                $(go.Picture, "/scheme/getImgBySchemeId?schemeId=" + schemeId)
+            ));
 
 
         myDiagram.nodeTemplateMap.add("MeteringDevice2",
@@ -746,36 +703,43 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         SchemeService.getLinks().$promise.then(function (links) {
             $scope.links = links;
-            SchemeService.getNodes().$promise.then(function (nodes) {
+            SchemeService.getNodes(schemeId).$promise.then(function (nodes) {
                 $scope.nodes = nodes;
-                SchemeService.getImagesIds().$promise.then(function (res) {
-                    res.forEach(function (val) {
-                        addImagesToTemplateMap(val.id);
-                    });
 
-
-                    for (var i = 0; i < $scope.nodes.length; i++) {
-                        var obj = $scope.nodes[i];
-                        if (obj.category == null) {
-                            delete(obj.category);
-                        }
-                        if (obj.angle == null) {
-                            delete (obj.angle);
-                        }
+                for (var i = 0; i < $scope.nodes.length; i++) {
+                    var obj = $scope.nodes[i];
+                    if (obj.category == null) {
+                        delete(obj.category);
                     }
-
-                    for (var i = 0; i < $scope.links.length; i++) {
-                        var obj = $scope.links[i];
-                        if (obj.color == null) {
-                            delete(obj.color);
-                        }
+                    if (obj.angle == null) {
+                        delete (obj.angle);
                     }
-                    myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+                    if (obj.pos == null) {
+                        delete (obj.pos);
+                    }
+                    if (obj.text == null) {
+                        delete (obj.text);
+                    }
+                }
+
+                for (var i = 0; i < $scope.links.length; i++) {
+                    var obj = $scope.links[i];
+                    if (obj.color == null) {
+                        delete(obj.color);
+                    }
+                }
+                myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+                myDiagram.model.nodeDataArray.forEach(function (val) {
+                    if (val.category === "image"){
+                        $scope.isImage = true;
+                    }
                 });
+                if (!$scope.isImage){
+                    myDiagram.model.addNodeData({category: "image"});
+                }
+
             });
         });
-
-
         // animate some flow through the pipes
 
 
@@ -810,13 +774,26 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         });
 
 
-        $rootScope.$on('addImage', function (event, id) {
-            myDiagram.model.addNodeData({category: "image" + id});
+        $rootScope.$on('uploadImage', function (event) {
+            SchemeService.saveNodes(schemeId, myDiagram.model.nodeDataArray).$promise.then(
+                $window.location.reload()
+            );
         });
 
 
+
+        $scope.zoomIn = function () {
+            myDiagram.scale = myDiagram.scale + 0.1;
+
+        };
+        $scope.zoomOut = function () {
+            myDiagram.scale = myDiagram.scale - 0.1;
+        };
+
     })
-    .controller('SchemeViewCtrl', function ($scope, SchemeService, DataService, $mdToast) {
+    .controller('SchemeViewCtrl', function ($scope, SchemeService, DataService, $mdToast, $routeParams) {
+        var schemeId = $routeParams.id;
+        $scope.schemeId = $routeParams.id;
 
         var last = {
             bottom: false,
@@ -847,8 +824,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         var myDiagram =
             $(go.Diagram, "diagram", {
                 isReadOnly: true,
-                "grid.visible": true,
-                "grid.gridCellSize": new go.Size(30, 20),
                 "draggingTool.isGridSnapEnabled": true,
                 "resizingTool.isGridSnapEnabled": true,
                 initialContentAlignment: go.Spot.Center,
@@ -998,7 +973,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             }
         };
         var changePumpState = function () {
-            console.log($scope.sauterCoilVal);
             if ($scope.sauterCoilVal == 1) {
                 DataService.setSauterCoilVal(0).$promise.then(function (res) {
                     changePumpColor("#dd0006");
@@ -1067,12 +1041,10 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             ));
 
 
-        var addImagesToTemplateMap = function (id) {
-            myDiagram.nodeTemplateMap.add("image" + id,
+            myDiagram.nodeTemplateMap.add("image",
                 $(go.Part,
-                    $(go.Picture, "/scheme/getImageById?id=" + id)
+                    $(go.Picture, "/scheme/getImgBySchemeId?schemeId=" + schemeId)
                 ));
-        };
 
 
         myDiagram.linkTemplate =
@@ -1116,35 +1088,45 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         SchemeService.getLinks().$promise.then(function (links) {
             $scope.links = links;
-            SchemeService.getNodes().$promise.then(function (nodes) {
+            SchemeService.getNodes(schemeId).$promise.then(function (nodes) {
                 $scope.nodes = nodes;
-                SchemeService.getImagesIds().$promise.then(function (res) {
-                    res.forEach(function (val) {
-                        addImagesToTemplateMap(val.id);
-                    });
 
-
-                    for (var i = 0; i < $scope.nodes.length; i++) {
-                        var obj = $scope.nodes[i];
-                        if (obj.category == null) {
-                            delete(obj.category);
-                        }
-                        if (obj.angle == null) {
-                            delete (obj.angle);
-                        }
+                for (var i = 0; i < $scope.nodes.length; i++) {
+                    var obj = $scope.nodes[i];
+                    if (obj.category == null) {
+                        delete(obj.category);
                     }
-
-                    for (var i = 0; i < $scope.links.length; i++) {
-                        var obj = $scope.links[i];
-                        if (obj.color == null) {
-                            delete(obj.color);
-                        }
+                    if (obj.angle == null) {
+                        delete (obj.angle);
                     }
-                    myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
-                    getSauterCoilData();
+                    if (obj.pos == null) {
+                        delete (obj.pos);
+                    }
+                    if (obj.text == null) {
+                        delete (obj.text);
+                    }
+                }
+
+                for (var i = 0; i < $scope.links.length; i++) {
+                    var obj = $scope.links[i];
+                    if (obj.color == null) {
+                        delete(obj.color);
+                    }
+                }
+                myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+                myDiagram.model.nodeDataArray.forEach(function (val) {
+                    if (val.category === "image"){
+                        $scope.isImage = true;
+                    }
                 });
+                if (!$scope.isImage){
+                    myDiagram.model.addNodeData({category: "image"});
+                }
+
             });
+            getSauterCoilData();
         });
+
 
         var showToast = function (msg, delay) {
             var pinTo = $scope.getToastPosition();
@@ -1163,7 +1145,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     showToast("Не удалось загрузить положение насоса для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
 
                 } else {
-                    console.log(res[0]);
                     if (res[0] === 'true') {
                         changePumpColor("#15dd00");
                         $scope.sauterCoilVal = 1;
@@ -1179,16 +1160,25 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             });
         };
 
+        $scope.zoomIn = function () {
+
+            myDiagram.scale = myDiagram.scale + 0.1;
+
+
+        };
+        $scope.zoomOut = function () {
+
+            myDiagram.scale = myDiagram.scale - 0.1;
+
+        };
+
 
     })
     .controller('ApiDocController', function ($scope) {
         // init form
         $scope.isLoading = false;
         $scope.url = $scope.swaggerUrl = 'v2/api-docs';
-        // error management
-        $scope.myErrorHandler = function (data, status) {
-            console.log('failed to load swagger: ' + status + '   ' + data);
-        };
+
 
         $scope.infos = false;
     })
