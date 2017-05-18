@@ -1,4 +1,4 @@
-package ru.konsort.la.service.dto;
+package ru.konsort.la.dto;
 
 import java.util.Date;
 import java.util.HashSet;

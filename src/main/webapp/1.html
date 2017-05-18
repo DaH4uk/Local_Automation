@@ -1,42 +1,62 @@
 <html>
 <head>
-    <title></title>
-    <script type="text/javascript">
+    <title>ws</title>
+    <script language="javascript" type="text/javascript">
+        //        var socket = new WebSocketImpl("ws://" + location.host + "/websocket");
         var st = "ws://" + window.location.host + "/websocket";
         console.log(st);
-        var socket = new WebSocket("ws://" + location.host + "/websocket");
 
-        socket.onopen = function () {
-            console.log("Соединение установлено.");
-        };
+        var wsUri = "ws://localhost:8080/socket";
 
-        socket.onclose = function (event) {
-            if (event.wasClean) {
-                console.log('Соединение закрыто');
-            } else {
-                console.log('Обрыв соединения');
-            }
-            console.log('Код: ' + event.code + ' причина: ' + event.reason);
-        };
-        socket.onmessage = function (event) {
-            var logarea = document.getElementById("log");
-            logarea.value = event.data;
-        };
-        socket.onerror = function (error) {
-            console.log("Ошибка " + error.message);
-        };
-
-        function send() {
-            var s = document.getElementById("in").value;
-            socket.send(s);
+        function init() {
+            output = document.getElementById("output");
         }
+        function send_message() {
+            var websocket = new WebSocket(wsUri);
+            websocket.onopen = function (evt) {
+                onOpen(evt)
+            };
+            websocket.onmessage = function (evt) {
+                onMessage(evt)
+            };
+            websocket.onerror = function (evt) {
+                onError(evt)
+            };
+        }
+        function onOpen(evt) {
+            writeToScreen("Connected to Endpoint!");
+            doSend(textID.value);
+        }
+        function onMessage(evt) {
+            writeToScreen("Message Received: " + evt.data);
+            console.log(event.data);
+        }
+        function onError(evt) {
+            writeToScreen('ERROR: ' + evt.data);
+        }
+        function doSend(message) {
+            writeToScreen("Message Sent: " + message);
+            websocket.send(message);
+            //websocket.close();
+        }
+        function writeToScreen(message) {
+            var pre = document.createElement("p");
+            pre.style.wordWrap = "break-word";
+            pre.innerHTML = message;
 
+            output.appendChild(pre);
+        }
+        window.addEventListener("load", init, false);
     </script>
 </head>
 <body>
-<input type="text" id="in"/><input type="button" onclick="send()" value="send"/>
-<br/>
-<textarea id="log" rows="8" cols="20">
-</textarea>
+<br>
+<div style="text-align: center;">
+    <form action="">
+        <input onclick="send_message()" value="Send" type="button">
+        <input id="textID" name="message" value="Hello WebSocket!" type="text"><br>
+    </form>
+</div>
+<div id="output"></div>
 </body>
 </html>

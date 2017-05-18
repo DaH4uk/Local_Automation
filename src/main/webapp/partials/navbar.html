@@ -7,6 +7,28 @@
             Sensor
         </md-button>
         <span flex="" class="flex"></span>
+
+        <md-menu ng-if="showErrorData">
+            <md-button aria-label="alert" style="height: 64px;" ng-click="ctrl.openMenu($mdOpenMenu, $event)"
+                       class="md-hue-1 demo-menu-open-button no_text_transform">
+
+                <notification-icon animation="shake" count="errorSize">
+                    <img ng-src="/resources/img/icons/ic_warning_white_24px.svg">
+                </notification-icon>
+
+            </md-button>
+            <md-menu-content>
+                <md-list-item class="md-2-line contact-item selected" ng-repeat="item in errorData">
+                    <img ng-src="resources/img/icons/ic_warning_black_24px.svg" class="md-avatar" alt="img" />
+                    <div class="md-list-item-text compact">
+                        <h3 style="font-weight: bold">{{item.name}}</h3>
+                        <p>{{item.error}}</p>
+                    </div>
+                </md-list-item>
+
+            </md-menu-content>
+        </md-menu>
+
         <md-menu ng-if="showRightMenu">
 
             <md-button style="height: 64px;" ng-click="ctrl.openMenu($mdOpenMenu, $event)"
@@ -26,6 +48,7 @@
                 <md-menu-item>
                     <md-button ng-click="redo($event)"><img src="resources/img/icons/ic_redo_black_24px.svg"/> Повторить
                         <span class="md-alt-text" style="margin-left: 75px;"> {{ 'M-Y' | keyboardShortcut }}
+                        </span>
                     </md-button>
                 </md-menu-item>
 
@@ -67,8 +90,9 @@
         <div class="userView">
             <img class="background"
                  src="/resources/img/menu_bg2.jpg">
-            <a href="#/user_settings" ng-click="close()"><img class="img-circle user_image"
-                                                              src="/resources/img/people/{{account.id}}.jpg"></a>
+            <a href="#/user_settings" ng-click="close()">
+                <img class="img-circle user_image"
+                     src="/resources/img/people/{{account.firstName | lowercase}}-{{account.lastName | lowercase}}.jpg"/></a>
             <a href="#/user_settings" ng-click="close()" class="user_menu_name no_text_transform">{{account.firstName}}
                 {{account.lastName}}
             </a>
@@ -103,7 +127,7 @@
                         </md-menu-item>
                         <md-menu-divider></md-menu-divider>
                         <md-menu-item>
-                            <md-button  ng-click="addScheme($event);">
+                            <md-button ng-click="addScheme($event);">
                                 <img src="resources/img/icons/ic_playlist_add_black_24px.svg" class="images"/>
                                 Добавить схему
                             </md-button>

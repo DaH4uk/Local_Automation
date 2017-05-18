@@ -1,5 +1,5 @@
 INSERT INTO users (first_name, family_name, login, password, e_mail, phone, language, enabled)
-VALUES ('Danil', 'Turov', 'admin', 'admin', 'turovdanil@mail.ru', '89124999334', 'ru', TRUE);
+VALUES ('Admin', 'Admin', 'admin', 'admin', 'admin@konsort.ru', '+7123456789', 'ru', TRUE);
 INSERT INTO users (first_name, family_name, login, password, e_mail, phone, language, enabled)
 VALUES ('User', 'User', 'user', 'user', 'user@mail.ru', '8564564', 'ru', TRUE);
 

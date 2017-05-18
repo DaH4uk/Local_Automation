@@ -1,6 +1,5 @@
 package ru.konsort.la.model;
 
-import java.util.List;
 
 /**
  * Created by turov on 13.02.2017.
@@ -9,25 +8,27 @@ public class RegisterData {
     /**
      * Массив полученных данных
      */
-    private List<String> data;
-    /**
-     * Ошибки при работе с Каратом
-     */
-    private String errors;
+    private String value;
+    private String error;
 
-    public List<String> getData() {
-        return data;
+    public RegisterData(String value, String error) {
+        this.value = value;
+        this.error = error;
     }
 
-    public void setData(List<String> data) {
-        this.data = data;
+    public String getValue() {
+        return value;
     }
 
-    public String getErrors() {
-        return errors;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public void setErrors(String errors) {
-        this.errors = errors;
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }

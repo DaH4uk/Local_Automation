@@ -38,6 +38,9 @@ public class NodeData {
     @Column(name = "scheme_id")
     private Long schemeId;
 
+    @Column(name = "layer")
+    private String layer;
+
     public Long getId() {
         return id;
     }
@@ -92,5 +95,13 @@ public class NodeData {
 
     public void setSchemeId(Long schemeId) {
         this.schemeId = schemeId;
+    }
+
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
     }
 }

@@ -8,5 +8,5 @@ import ru.konsort.la.model.RegisterData;
  */
 @Service
 public interface HttpLocalService {
-    RegisterData getControllerData(String urlPreset);
+    String getControllerData(String urlPreset);
 }

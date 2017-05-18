@@ -1,7 +1,7 @@
 'use strict';
 
 var myapp = angular
-    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'spinkitLoader', 'ngMaterial', 'angularFileUpload', 'lfNgMdFileInput']);
+    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'spinkitLoader', 'ngMaterial', 'angularFileUpload', 'lfNgMdFileInput', 'AngularStompDK', 'angular-notification-icons']);
 
 
 myapp.constant('USER_ROLES', {
@@ -10,8 +10,14 @@ myapp.constant('USER_ROLES', {
     user: 'user'
 });
 
+myapp.config(function(ngstompProvider){
+    ngstompProvider
+        .url('/hello')
+        .credential('login', 'password')
+        .class(SockJS); // <-- Will be used by StompJS to do the connection
+});
 
-myapp.config(function ($routeProvider, USER_ROLES, $locationProvider) {
+myapp.config(function ($routeProvider, USER_ROLES) {
 
     $routeProvider.when("/home", {
         templateUrl: "partials/home.html",

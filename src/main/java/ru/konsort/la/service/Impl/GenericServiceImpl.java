@@ -1,4 +1,4 @@
-package ru.konsort.la.service;
+package ru.konsort.la.service.Impl;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import ru.konsort.la.service.GenericService;
 
 public class GenericServiceImpl<T, D, ID extends Serializable> implements GenericService<T, D, ID> {
 

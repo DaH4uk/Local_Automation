@@ -12,7 +12,7 @@
         <org.aspectj-version>1.6.10</org.aspectj-version>
         <jackson.version>1.9.13</jackson.version>
         <hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
-        <org.springframework-version>4.2.6.RELEASE</org.springframework-version>
+        <org.springframework-version>4.3.6.RELEASE</org.springframework-version>
         <org.slf4j-version>1.6.6</org.slf4j-version>
         <springfox-version>2.2.2</springfox-version>
     </properties>
@@ -26,6 +26,16 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -115,6 +125,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
             <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <version>RELEASE</version>
         </dependency>
 
 
@@ -238,25 +253,7 @@
             <version>${springfox-version}</version>
         </dependency>
 
-        <!-- test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${org.springframework-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>4.1.6.RELEASE</version>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -283,71 +280,72 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
 
             <!--<plugin>-->
-                <!--<groupId>com.github.eirslett</groupId>-->
-                <!--<artifactId>frontend-maven-plugin</artifactId>-->
-                <!--<version>0.0.22</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>install node and npm</id>-->
-                        <!--<goals>-->
-                            <!--<goal>install-node-and-npm</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>generate-resources</phase>-->
-                        <!--<configuration>-->
-                            <!--<nodeVersion>v0.12.7</nodeVersion>-->
-                            <!--<npmVersion>3.3.3</npmVersion>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>npm cache</id>-->
-                        <!--<goals>-->
-                            <!--<goal>npm</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>generate-resources</phase>-->
-                        <!--<configuration>-->
-                            <!--<arguments>config set cache node\npm-cache &#45;&#45;global</arguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                   <!--<execution>-->
-                        <!--<id>npm config</id>-->
-                        <!--<goals>-->
-                            <!--<goal>npm</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>generate-resources</phase>-->
-                        <!--<configuration>-->
-                            <!--<arguments>config set config node\npm-config &#45;&#45;global</arguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>npm install</id>-->
-                        <!--<goals>-->
-                            <!--<goal>npm</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>generate-resources</phase>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>bower install</id>-->
-                        <!--<goals>-->
-                            <!--<goal>bower</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<arguments>install</arguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>gulp build</id>-->
-                        <!--<goals>-->
-                            <!--<goal>gulp</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>generate-resources</phase>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<groupId>com.github.eirslett</groupId>-->
+            <!--<artifactId>frontend-maven-plugin</artifactId>-->
+            <!--<version>0.0.22</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>install node and npm</id>-->
+            <!--<goals>-->
+            <!--<goal>install-node-and-npm</goal>-->
+            <!--</goals>-->
+            <!--<phase>generate-resources</phase>-->
+            <!--<configuration>-->
+            <!--<nodeVersion>v0.12.7</nodeVersion>-->
+            <!--<npmVersion>3.3.3</npmVersion>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--<execution>-->
+            <!--<id>npm cache</id>-->
+            <!--<goals>-->
+            <!--<goal>npm</goal>-->
+            <!--</goals>-->
+            <!--<phase>generate-resources</phase>-->
+            <!--<configuration>-->
+            <!--<arguments>config set cache node\npm-cache &#45;&#45;global</arguments>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--<execution>-->
+            <!--<id>npm config</id>-->
+            <!--<goals>-->
+            <!--<goal>npm</goal>-->
+            <!--</goals>-->
+            <!--<phase>generate-resources</phase>-->
+            <!--<configuration>-->
+            <!--<arguments>config set config node\npm-config &#45;&#45;global</arguments>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--<execution>-->
+            <!--<id>npm install</id>-->
+            <!--<goals>-->
+            <!--<goal>npm</goal>-->
+            <!--</goals>-->
+            <!--<phase>generate-resources</phase>-->
+            <!--</execution>-->
+            <!--<execution>-->
+            <!--<id>bower install</id>-->
+            <!--<goals>-->
+            <!--<goal>bower</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+            <!--<arguments>install</arguments>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--<execution>-->
+            <!--<id>gulp build</id>-->
+            <!--<goals>-->
+            <!--<goal>gulp</goal>-->
+            <!--</goals>-->
+            <!--<phase>generate-resources</phase>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
         </plugins>
     </build>

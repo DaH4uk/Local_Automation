@@ -1,7 +1,7 @@
 'use strict';
 
 
-myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedService, $mdBottomSheet, USER_ROLES) {
+myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedService, $mdBottomSheet) {
     $scope.showBottomSheet = function () {
         $mdBottomSheet.show({
             templateUrl: 'partials/bottom-sheet.html',
@@ -41,6 +41,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             location.href = item.url;
         };
 
+
         $scope.addScheme = function (ev) {
             // Appending dialog to document.body to cover sidenav in docs app
             var confirm = $mdDialog.prompt()
@@ -63,11 +64,11 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             });
         }
     })
-    .controller('DataViewCtrl', function ($scope, $mdToast, DataService) {
-        $scope.karatDataLoading = true;
+    .controller('DataViewCtrl', function ($scope, $mdToast, ngstomp, $log) {
         $scope.sauterDayloading = true;
         $scope.sauterNightLoading = true;
         $scope.sauterCoilLoading = true;
+        $scope.sauterControlLoading = true;
 
         $scope.sauterDayDisabled = false;
         $scope.sauterNightDisabled = false;
@@ -110,117 +111,98 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             );
         };
 
-        DataService.getKaratData().$promise.then(function (res) {
-            if (res[0].indexOf('Error') + 1) {
-                showToast("Не удалось загрузить значения регистров для Карат-307. Произошла ошибка: " + res[0], 15);
-                $scope.KaratError = "Произошла ошибка при загрузке данных: " + res[0]
+
+        ngstomp
+            .subscribeTo('/data/updater')
+            .callback(whatToDoWhenMessageComming)
+            .withBodyInJson()
+            .connect();
+
+        ngstomp.send("/app/hello", "hello");
+
+
+        function whatToDoWhenMessageComming(message) {
+            var wsData = message.body;
+            $log.info(wsData);
+            parseData(wsData);
+        }
+
+        var parseData = function (data) {
+            // if (data.errorsMap.karat_data) {
+            //     $scope.KaratError = "Произошла ошибка при загрузке данных: " + data.errorsMap.karat_data;
+            // } else {
+            //     $scope.karatData = data.karatData;
+            // }
+            if (data.Error === "" || data.Error === undefined) {
+                $scope.sauterDayloading = false;
+                $scope.sauterNightLoading = false;
+                $scope.sauterCoilLoading = false;
+                $scope.sauterControlLoading = false;
             } else {
-                $scope.karatData = new Array();
-                res.forEach(function (val) {
-                    $scope.karatData.push(JSON.parse(val));
-                });
-                showToast("Значения регистров для Карат-307 успешно загружены!", 3);
-
-
+                $scope.sauterDayloading = false;
+                $scope.sauterNightLoading = false;
+                $scope.sauterCoilLoading = false;
+                $scope.sauterControlLoading = false;
+                showToast("Произошла ошибка: " + data.Error);
             }
-            $scope.karatDataLoading = false;
-        });
-        DataService.getSauterDayTemp().$promise.then(function (res) {
-            if (res[0].indexOf('Error') + 1) {
-                showToast("Не удалось загрузить значение дневной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
-                $scope.sauterDayDisabled = true;
-            } else {
-                $scope.sauterDayTemp = res;
-                showToast("Значение дневной уставки для SAUTER EQJV125 успешно загружено!", 3);
 
+            if (data.sauter_read_day_sp_rk1) {
+                $scope.sauterDayTemp = data.sauter_read_day_sp_rk1.value;
+                $scope.sauterDayloading = false;
             }
-
-            $scope.sauterDayloading = false;
-        });
-        DataService.getSauterNightTemp().$promise.then(function (res) {
-            if (res[0].indexOf('Error') + 1) {
-                showToast("Не удалось загрузить значение ночной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
-                $scope.sauterNightDisabled = true;
-
-            } else {
-                $scope.sauterNightTemp = res;
-                showToast("Значение ночной уставки для SAUTER EQJV125 успешно загружено!", 3);
-
+            if (data.sauter_read_night_sp_rk1) {
+                $scope.sauterNightTemp = data.sauter_read_night_sp_rk1.value;
+                $scope.sauterNightLoading = false;
             }
-            $scope.sauterNightLoading = false;
-        });
-        DataService.getSauterCoilVal().$promise.then(function (res) {
-            if (res[0].indexOf('Error') + 1) {
-                showToast("Не удалось загрузить положение насоса для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
-                $scope.coilDisabled = true;
-
-            } else {
-                $scope.sauterCoilVal = res[0];
-                if (res[0] == true) {
+            if (data.sauter_read_coil) {
+                if (data.sauter_read_coil.value === "true") {
                     $scope.sauterCoilVal = 1;
                 } else {
                     $scope.sauterCoilVal = 0;
                 }
-                showToast("Положение насоса для SAUTER EQJV125 успешно загружено!", 3);
+                $scope.sauterCoilLoading = false;
             }
-
-
-            $scope.sauterCoilLoading = false;
-        });
-
-        $scope.sauterChange = function (s) {
-            $scope.sauterCoilVal = s;
+            if (data.sauter_get_control_rk1) {
+                $scope.controlVal = data.sauter_get_control_rk1.value;
+                $scope.sauterControlLoading = false;
+            }
         };
+
 
         $scope.setSauterDayTemp = function () {
             $scope.sauterDayloading = true;
-            DataService.setSauterDayVal($scope.sauterDayTemp[0]).$promise.then(function (res) {
-                if (res.Errors == "Complete") {
-                    showToast("Значение дневной уставки для SAUTER EQJV125 успешно установлено!", 3);
-                } else {
-                    showToast("Не удалось установить значение дневной уставки для SAUTER EQJV125. \n Поизошла ошибка: " + res.Errors, 15);
-                }
-                $scope.sauterDayloading = false;
+            ngstomp.send("/app/set", {
+                element: "day_setpoint_rk1",
+                value: $("#sauterDayTemp").val()
             });
         };
         $scope.setSauterNightTemp = function () {
-            var tmp =
-                $scope.sauterNightLoading = true;
-            DataService.setSauterNightVal($scope.sauterNightTemp[0]).$promise.then(function (res) {
-                if (res.Errors == "Complete") {
-                    showToast("Значение ночной уставки для SAUTER EQJV125 успешно установлено!", 3);
-                } else {
-                    showToast("Не удалось установить значение ночной уставки для SAUTER EQJV125. \n Поизошла ошибка: " + res.Errors, 15);
-                }
-                $scope.sauterNightLoading = false;
+            $scope.sauterNightLoading = true;
+            ngstomp.send("/app/set", {
+                element: "night_setpoint_rk1",
+                value: $("#sauterNightTemp").val()
             });
         };
         $scope.setSauterCoil = function () {
-
-
             $scope.sauterCoilLoading = true;
-
-            DataService.setSauterCoilVal($scope.sauterCoilVal).$promise.then(function (res) {
-                if (res.Errors == "Complete") {
-                    showToast("Положение насоса для SAUTER EQJV125 успешно установлено!", 3);
-                } else {
-                    showToast("Не удалось установить положение насоса для SAUTER EQJV125. Поизошла ошибка: " + res.Errors, 15);
-                }
-                $scope.sauterCoilLoading = false;
+            ngstomp.send("/app/set", {
+                element: "write_coil_57",
+                value: $scope.sauterCoilVal
             });
         };
 
         $scope.setSauterControlVal = function () {
-            DataService.setSauterControlVal($scope.controlVal).$promise.then(function (res) {
-                if (res.Errors == "Complete") {
-                    showToast("Положение трехпозиционного клапана для SAUTER EQJV125 успешно установлено!", 3);
-                } else {
-                    showToast("Не удалось установить положение трехпозиционного клапана для SAUTER EQJV125. Поизошла ошибка: " + res.Errors, 15);
-                }
-
+            $log.info($scope.controlVal);
+            $scope.sauterControlLoading = true;
+            ngstomp.send("/app/set", {
+                element: "control_rk1",
+                value: $scope.controlVal
             });
         };
 
+        $scope.$on('$routeChangeStart', function (next, current) {
+            ngstomp.unsubscribe("/data/updater");
+        });
 
     })
     .controller('ImgUplDlgCtrl', function ($scope, $http, $mdDialog, $location, $rootScope) {
@@ -249,12 +231,29 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $mdDialog.hide();
         };
     })
-    .controller('NavbarCtrl', function ($rootScope, $timeout, $mdSidenav, $scope, $location, $mdDialog, $http, SchemeService) {
+    .controller('NavbarCtrl', function ($rootScope, $timeout, $mdSidenav, $scope, $location, $mdDialog, $http, SchemeService, ngstomp, $log) {
 
         $rootScope.$on("$routeChangeSuccess", function () {
             var loc = $location.path() + "";
             $scope.showRightMenu = loc.indexOf("schemeEdit") === 1;
         });
+
+        ngstomp
+            .subscribeTo('/data/errors')
+            .callback(whatToDoWhenMessageComing)
+            .withBodyInJson()
+            .connect();
+        $scope.errorData = [];
+        $scope.showErrorData = false;
+        function whatToDoWhenMessageComing(message) {
+            var wsData = message.body;
+            $scope.showErrorData = true;
+            $scope.errorData.push(wsData);
+            var audio = new Audio('/resources/FadeIn.mp3');
+            audio.play();
+            $scope.errorSize = $scope.errorData.length;
+            $log.info($scope.errorData);
+        }
 
         $scope.undo = function (event) {
             $rootScope.$emit('undo');
@@ -353,12 +352,12 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
     })
     .controller('DialogCtrl', function ($scope, $mdDialog, $rootScope, SchemeService, $mdBottomSheet) {
         $scope.items = [
-            {name: "Кран", icon: "valve.svg", category: "Valve", width: "24"},
-            {name: "Расходомер", icon: "flowmeter.svg", category: "Flowmeter", width: "24"},
-            {name: "Прибор учета 1", icon: "meteringDevice-1.svg", category: "MeteringDevice1", width: "44"},
-            {name: "Прибор учета 2", icon: "meteringDevice-2.svg", category: "MeteringDevice2", width: "44"},
+            // {name: "Кран", icon: "valve.svg", category: "Valve", width: "24"},
+            // {name: "Расходомер", icon: "flowmeter.svg", category: "Flowmeter", width: "24"},
+            // {name: "Прибор учета 1", icon: "meteringDevice-1.svg", category: "MeteringDevice1", width: "44"},
+            // {name: "Прибор учета 2", icon: "meteringDevice-2.svg", category: "MeteringDevice2", width: "44"},
             {name: "Насос", icon: "pump.svg", category: "Pump", width: "24"},
-            {name: "Контроллер", icon: "controller.svg", category: "Controller", width: "44"},
+            // {name: "Контроллер", icon: "controller.svg", category: "Controller", width: "44"},
             {name: "Дневная тепература", icon: "tempCtrl.png", category: "dayTemp", width: "24"},
             {name: "Ночная тепература", icon: "tempCtrl.png", category: "nightTemp", width: "24"}
         ];
@@ -377,7 +376,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $rootScope.$emit('addItem', clickedItem.category, clickedItem.name);
         };
     })
-    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope, SchemeService, $routeParams, $mdBottomSheet, $window, DataService) {
+    .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope, SchemeService, $routeParams, $mdBottomSheet, $window) {
         var schemeId = $routeParams.id;
 
         $scope.isOpen = false;
@@ -473,9 +472,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 });
         }
 
-        // define the Node templates for regular nodes
-
-        var lightText = 'whitesmoke';
 
         function changeColor(e, obj) {
             myDiagram.startTransaction("changed color");
@@ -498,6 +494,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             myDiagram.model.setDataProperty(nodedata, "color", newcolor);
             myDiagram.commitTransaction("changed color");
         }
+
+        // myDiagram.addLayerBefore($(go.Layer, { name: "Foreground" }), myDiagram.findLayer("Foreground"));
 
         myDiagram.nodeTemplateMap.add("Valve",
             $(go.Node, go.Panel.Spot, nodeStyle(),
@@ -578,7 +576,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         myDiagram.nodeTemplateMap.add("image",
             $(go.Part,
-                $(go.Picture, "/scheme/getImgBySchemeId?schemeId=" + schemeId)
+                $(go.Picture, "/scheme/getImgBySchemeId?schemeId=" + schemeId),
+                new go.Binding("layerName", "layer")
             ));
 
 
@@ -610,6 +609,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         myDiagram.nodeTemplateMap.add("Pump",
             $(go.Node, go.Panel.Spot,
                 new go.Binding("angle").makeTwoWay(),
+                new go.Binding("layerName", "layer"),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
                 $(go.Shape, "Circle",
                     {fill: "#ACE600", stroke: null, desiredSize: new go.Size(50, 50)},
@@ -634,6 +634,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         myDiagram.nodeTemplateMap.add("dayTemp",
             $(go.Node, go.Panel.Position,
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                new go.Binding("layerName", "layer"),
                 $(go.Shape, "Rectangle",
                     {
                         name: "TABLESHAPE",
@@ -689,6 +690,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         myDiagram.nodeTemplateMap.add("nightTemp",
             $(go.Node, go.Panel.Position,
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                new go.Binding("layerName", "layer"),
                 $(go.Shape, "Rectangle",
                     {
                         name: "TABLESHAPE",
@@ -867,6 +869,12 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                         delete(obj.color);
                     }
                 }
+                $scope.nodes.forEach(function (val) {
+                    if (val.category !== "image") {
+                        console.log(val);
+                        val.layer = "Foreground";
+                    }
+                });
                 myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
                 myDiagram.model.nodeDataArray.forEach(function (val) {
                     if (val.category === "image") {
@@ -874,12 +882,11 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     }
                 });
                 if (!$scope.isImage) {
-                    myDiagram.model.addNodeData({category: "image"});
+                    myDiagram.model.addNodeData({category: "image", key: 99, layer: "Background"});
                 }
 
             });
         });
-        // animate some flow through the pipes
 
 
 // Устанавливает видимость портов при наведении мыши на шаблон
@@ -972,7 +979,12 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         };
 
     })
-    .controller('SchemeViewCtrl', function ($scope, SchemeService, DataService, $mdToast, $routeParams) {
+    .controller('SchemeViewCtrl', function ($scope, SchemeService, $mdToast, $routeParams, ngstomp, $log) {
+
+        $scope.$on('$routeChangeStart', function (next, current) {
+            ngstomp.unsubscribe("/data/updater");
+        });
+
         var schemeId = $routeParams.id;
         $scope.schemeId = $routeParams.id;
 
@@ -1012,166 +1024,37 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             });
 
 
-        function nodeStyle() {
-            return [];
-        }
-
-        // Define a function for creating a "port" that is normally transparent.
-        // The "name" is used as the GraphObject.portId, the "spot" is used to control how links connect
-        // and where the port is positioned on the node, and the boolean "output" and "input" arguments
-        // control whether the user can draw links from or to the port.
-        function makePort(name, spot, output, input) {
-            // the port is basically just a small circle that has a white stroke when it is made visible
-            return $(go.Shape, "Circle",
-                {
-                    fill: "transparent",
-                    stroke: null,  // this is changed to "white" in the showPorts function
-                    desiredSize: new go.Size(8, 8),
-                    alignment: spot, alignmentFocus: spot,  // align the port on the main Shape
-                    portId: name,  // declare this object to be a "port"
-                    fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
-                    fromLinkable: output, toLinkable: input,  // declare whether the user may draw links to/from here
-                    cursor: "pointer"  // show a different cursor to indicate potential link point
-                });
-        }
-
-        // define the Node templates for regular nodes
-
-        var lightText = 'whitesmoke';
-
-        myDiagram.nodeTemplateMap.add("Valve",
-            $(go.Node, go.Panel.Spot, nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Picture, {
-                    desiredSize: new go.Size(56, 50),
-                    source: "/resources/img/icons/scheme/valve.svg"
-                }),
-                $(go.TextBlock, {
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true,
-                        alignment: new go.Spot(0.5, 0.8)
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", new go.Spot(-0.1, 0.25), true, true),
-                makePort("R", new go.Spot(1.1, 0.25), true, true)
-            ));
-
-
-        myDiagram.nodeTemplateMap.add("Flowmeter",
-            $(go.Node, go.Panel.Spot, nodeStyle(),  // or "Spot"
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Picture, {
-                    desiredSize: new go.Size(56, 50),
-                    source: "/resources/img/icons/scheme/flowmeter.svg",
-                    alignment: new go.Spot(0.5, 0.5),
-                    fromSpot: go.Spot.Right,  // port properties go on the port!
-                    toSpot: go.Spot.Left
-                }),
-                $(go.TextBlock, {
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true,
-                        alignment: new go.Spot(0.5, 1.2)
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true)
-            )
-        );
-
-        myDiagram.nodeTemplateMap.add("MeteringDevice1",
-            $(go.Node, go.Panel.Spot, nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Picture, {
-                    desiredSize: new go.Size(60, 30),
-                    source: "/resources/img/icons/scheme/meteringDevice-1.svg",
-                    alignment: new go.Spot(0.5, 0.5),
-                    fromSpot: go.Spot.Right,  // port properties go on the port!
-                    toSpot: go.Spot.Left
-                }),
-                $(go.TextBlock, {
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true,
-                        alignment: new go.Spot(0.5, 1.3)
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true)
-            ));
-        myDiagram.nodeTemplateMap.add("MeteringDevice2",
-            $(go.Node, go.Panel.Spot, nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Picture, {
-                    desiredSize: new go.Size(60, 30),
-                    source: "/resources/img/icons/scheme/meteringDevice-2.svg",
-                    alignment: new go.Spot(0.5, 0.5),
-                    fromSpot: go.Spot.Right,  // port properties go on the port!
-                    toSpot: go.Spot.Left
-                }),
-                $(go.TextBlock, {
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true,
-                        alignment: new go.Spot(0.5, 1.3)
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true)
-            ));
-
         var changePumpColor = function (color) {
             var arr = myDiagram.model.nodeDataArray;
 
             for (var i = 0; i < arr.length; i++) {
                 var data = arr[i];
 
-                if (data.category == "Pump") {
+                if (data.category === "Pump") {
                     data.color = color;
                     myDiagram.model.updateTargetBindings(data);
                 }
             }
         };
         var changePumpState = function () {
-            if ($scope.sauterCoilVal == 1) {
-                DataService.setSauterCoilVal(0).$promise.then(function (res) {
-                    changePumpColor("#dd0006");
-                    $scope.sauterCoilVal = 0;
-                    showToast("Насос выключен");
-                });
+            $log.info($scope.sauterCoilVal);
+            var coilVal;
+            if ($scope.sauterCoilVal === 1) {
+                coilVal = 0;
+                showToast("Выключение насоса", 15);
             } else {
-                DataService.setSauterCoilVal(1).$promise.then(function (res) {
-                    changePumpColor("#15dd00");
-                    $scope.sauterCoilVal = 1;
-
-                    showToast("Насос включен");
-                });
+                coilVal = 1;
+                showToast("Включение насоса", 15);
             }
+            ngstomp.send("/app/set", {
+                element: "write_coil_57",
+                value: coilVal
+            });
         };
         myDiagram.nodeTemplateMap.add("Pump",
             $(go.Node, go.Panel.Spot,
                 new go.Binding("angle").makeTwoWay(),
+                new go.Binding("layerName", "layer"),
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
                 $(go.Shape, "Circle",
                     {fill: "#ffffff", stroke: null, desiredSize: new go.Size(50, 50)},
@@ -1195,35 +1078,11 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     new go.Binding("text").makeTwoWay()
                 )));
 
-        myDiagram.nodeTemplateMap.add("Controller",
-            $(go.Node, go.Panel.Spot, nodeStyle(),
-                new go.Binding("angle").makeTwoWay(),
-                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Picture, {
-                    desiredSize: new go.Size(80, 40),
-                    source: "/resources/img/icons/scheme/controller.svg",
-                    alignment: new go.Spot(0.5, 0.5),
-                    fromSpot: go.Spot.Right,  // port properties go on the port!
-                    toSpot: go.Spot.Left
-                }),
-                $(go.TextBlock, {
-                        textAlign: "center",
-                        margin: 5,
-                        editable: true,
-                        alignment: new go.Spot(0.5, 0.5)
-                    },
-                    new go.Binding("text").makeTwoWay(),
-                    // keep the text upright, even when the whole node has been rotated upside down
-                    new go.Binding("angle", "angle", function (a) {
-                        return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true)
-            ));
 
         myDiagram.nodeTemplateMap.add("dayTemp",
             $(go.Node, go.Panel.Position,
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                new go.Binding("layerName", "layer"),
                 $(go.Shape, "Rectangle",
                     {
                         name: "TABLESHAPE",
@@ -1237,14 +1096,12 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     position: new go.Point(0, 0),
                     text: "Дневная температура"
                 }),
-                $(go.Panel, "Auto",
-                    {
+                $(go.Panel, "Auto", {
                         column: 1,
                         position: new go.Point(20, 30)
                     },
                     $(go.Shape, {fill: "#F2F2F2"}),
-                    $(go.TextBlock,
-                        {
+                    $(go.TextBlock, {
                             font: "10pt Verdana, sans-serif",
                             textAlign: "right", margin: 2,
                             width: 50,
@@ -1257,30 +1114,25 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                         })
                     )
                 ),
-                $(go.Panel, "Horizontal",
-                    {
+                $(go.Panel, "Horizontal", {
                         column: 2,
                         position: new go.Point(80, 30)
                     },
-                    $("Button",
-                        {
+                    $("Button", {
                             click: incrementCount
                         },
                         $(go.Shape, "PlusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
                     ),
-                    $("Button",
-                        {
+                    $("Button", {
                             click: decrementCount
                         },
                         $(go.Shape, "MinusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
                     )),
-                $("Button",
-                    {
+                $("Button", {
                         click: setDayTemp,
                         position: new go.Point(20, 60)
                     },
-                    $(go.TextBlock,
-                        {
+                    $(go.TextBlock, {
                             text: "Готово"
                         }
                     )
@@ -1290,27 +1142,25 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         myDiagram.nodeTemplateMap.add("nightTemp",
             $(go.Node, go.Panel.Position,
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
-                $(go.Shape, "Rectangle",
-                    {
-                        name: "TABLESHAPE",
-                        position: new go.Point(0, 0),
-                        desiredSize: new go.Size(200, 100),
-                        fill: "#008dff", stroke: null
-                    }),
+                new go.Binding("layerName", "layer"),
+                $(go.Shape, "Rectangle", {
+                    name: "TABLESHAPE",
+                    position: new go.Point(0, 0),
+                    desiredSize: new go.Size(200, 100),
+                    fill: "#008dff", stroke: null
+                }),
                 $(go.TextBlock, {
                     editable: true,
                     font: "bold 11pt Verdana, sans-serif",
                     position: new go.Point(0, 0),
                     text: "Ночная температура"
                 }),
-                $(go.Panel, "Auto",
-                    {
+                $(go.Panel, "Auto", {
                         column: 1,
                         position: new go.Point(20, 30)
                     },
                     $(go.Shape, {fill: "#F2F2F2"}),
-                    $(go.TextBlock,
-                        {
+                    $(go.TextBlock, {
                             font: "10pt Verdana, sans-serif",
                             textAlign: "right", margin: 2,
                             width: 50,
@@ -1323,72 +1173,59 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                         })
                     )
                 ),
-                $(go.Panel, "Horizontal",
-                    {
+                $(go.Panel, "Horizontal", {
                         column: 2,
                         position: new go.Point(80, 30)
                     },
-                    $("Button",
-                        {
+                    $("Button", {
                             click: incrementCount
                         },
                         $(go.Shape, "PlusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
                     ),
-                    $("Button",
-                        {
+                    $("Button", {
                             click: decrementCount
                         },
                         $(go.Shape, "MinusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
                     )),
-                $("Button",
-                    {
+                $("Button", {
                         click: setNightTemp,
                         position: new go.Point(20, 60)
                     },
-                    $(go.TextBlock,
-                        {
+                    $(go.TextBlock, {
                             text: "Готово"
                         }
                     )
                 )
             ));
 
+
         function setDayTemp() {
-            var value;
             myDiagram.model.nodeDataArray.forEach(function (val) {
                 if (val.category === "dayTemp") {
-                    value = val.text;
-                    console.log(value);
-                    DataService.setSauterDayVal(value).$promise.then(function (res) {
-                        if (res.Errors === "Complete") {
-                            showToast("Значение дневной уставки для SAUTER EQJV125 успешно установлено!", 3);
-                        } else {
-                            showToast("Не удалось установить значение дневной уставки для SAUTER EQJV125. \n Поизошла ошибка: " + res.Errors, 15);
-                        }
+                    showToast("Изменение дневной температуры");
+                    ngstomp.send("/app/set", {
+                        element: "day_setpoint_rk1",
+                        value: val.text
                     });
+
                 }
             });
         }
 
         function setNightTemp() {
-            var value;
             myDiagram.model.nodeDataArray.forEach(function (val) {
                 if (val.category === "nightTemp") {
-                    value = val.text;
-                    console.log(value);
-                    DataService.setSauterNightVal(value).$promise.then(function (res) {
-                        if (res.Errors === "Complete") {
-                            showToast("Значение ночной уставки для SAUTER EQJV125 успешно установлено!", 3);
-                        } else {
-                            showToast("Не удалось установить значение ночной уставки для SAUTER EQJV125. \n Поизошла ошибка: " + res.Errors, 15);
-                        }
+                    showToast("Изменение ночной температуры");
+                    ngstomp.send("/app/set", {
+                        element: "night_setpoint_rk1",
+                        value: val.text
                     });
                 }
             });
         }
 
         // Validation function for editing text
-        function isValidCount(textblock, oldstr, newstr) {
+        function isValidCount(newstr) {
             if (newstr === "") return false;
             var num = +newstr; // quick way to convert a string to a number
             return !isNaN(num) && Number.isInteger(num) && num >= 0;
@@ -1413,7 +1250,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
 
         myDiagram.nodeTemplateMap.add("image",
             $(go.Part,
-                $(go.Picture, "/scheme/getImgBySchemeId?schemeId=" + schemeId)
+                $(go.Picture, "/scheme/getImgBySchemeId?schemeId=" + schemeId),
+                new go.Binding("layerName", "layer")
             ));
 
 
@@ -1428,19 +1266,14 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     relinkableFrom: true,
                     relinkableTo: true,
                     reshapable: true,
-                    resegmentable: true,
-                    // mouse-overs subtly highlight links:
+                    resegmentable: true
                 },
-                // make sure links come in from the proper direction and go out appropriately
                 new go.Binding("fromSpot", "fromSpot", function (d) {
                     return spotConverter(d);
                 }),
                 new go.Binding("toSpot", "toSpot", function (d) {
                     return spotConverter(d);
                 }),
-
-
-                // mark each Shape to get the link geometry with isPanelMain: true
                 $(go.Shape, {
                         isPanelMain: true,
                         stroke: "#41BFEC" /* blue*/,
@@ -1461,31 +1294,36 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             SchemeService.getNodes(schemeId).$promise.then(function (nodes) {
                 $scope.nodes = nodes;
 
-                for (var i = 0; i < $scope.nodes.length; i++) {
-                    var obj = $scope.nodes[i];
-                    if (obj.category == null) {
+                $scope.nodes.forEach(function (val) {
+                    if (val.links === null) {
+                        delete(val.color);
+                    }
+                });
+
+                $scope.links.forEach(function (obj) {
+                    if (obj.category === null) {
                         delete(obj.category);
                     }
-                    if (obj.angle == null) {
+                    if (obj.angle === null) {
                         delete (obj.angle);
                     }
-                    if (obj.pos == null) {
+                    if (obj.pos === null) {
                         delete (obj.pos);
                     }
-                    if (obj.text == null) {
+                    if (obj.text === null) {
                         delete (obj.text);
                     }
-                }
+                });
 
-                for (var i = 0; i < $scope.links.length; i++) {
-                    var obj = $scope.links[i];
-                    if (obj.color == null) {
-                        delete(obj.color);
-                    }
-
-                }
                 myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
 
+                ngstomp
+                    .subscribeTo('/data/updater')
+                    .callback(whatToDoWhenMessageComming)
+                    .withBodyInJson()
+                    .connect();
+
+                ngstomp.send("/app/hello", "hello");
 
             });
         });
@@ -1500,26 +1338,10 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     .position(pinTo)
                     .hideDelay(delay * 1000)
             );
+            $scope.toastShowed = true;
         };
 
-        DataService.getSauterCoilVal().$promise.then(function (res) {
-            if (res[0].indexOf('Error') + 1) {
-                showToast("Не удалось загрузить положение насоса для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
 
-            } else {
-                if (res[0] === 'true') {
-                    changePumpColor("#15dd00");
-                    $scope.sauterCoilVal = 1;
-                } else {
-                    changePumpColor("#dd0006");
-                    $scope.sauterCoilVal = 0;
-                }
-                showToast("Положение насоса для SAUTER EQJV125 успешно загружено!", 3);
-            }
-
-
-            $scope.sauterCoilLoading = false;
-        });
         var changeVal = function (category, value) {
             myDiagram.model.nodeDataArray.forEach(function (val) {
                 if (val.category === category) {
@@ -1528,24 +1350,57 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 }
             });
         };
-        DataService.getSauterDayTemp().$promise.then(function (res) {
-            if (res[0].indexOf('Error') + 1) {
-                showToast("Не удалось загрузить значение дневной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
-            } else {
-                showToast("Значение дневной уставки для SAUTER EQJV125 успешно загружено!", 3);
-                changeVal("dayTemp", res[0]);
-            }
-        });
 
-        DataService.getSauterNightTemp().$promise.then(function (res) {
-            if (res[0].indexOf('Error') + 1) {
-                showToast("Не удалось загрузить значение дневной уставки для SAUTER EQJV125. Произошла ошибка: " + res[0], 15);
+        var changeSauterCoilVal = function (val) {
+            $log.info(val.value);
+            if (val.value === "true") {
+                changePumpColor("#15dd00");
+                $scope.sauterCoilVal = 1;
             } else {
-                showToast("Значение дневной уставки для SAUTER EQJV125 успешно загружено!", 3);
-                changeVal("nightTemp", res[0]);
+                changePumpColor("#dd0006");
+                $scope.sauterCoilVal = 0;
+            }
+        };
+
+
+        function whatToDoWhenMessageComming(message) {
+            var wsData = message.body;
+            $log.info(wsData);
+            parseData(wsData);
+        }
+
+        var hideToast = function (message) {
+            if ($scope.toastShowed === true) {
+                showToast(message, 3);
+                $scope.toastShowed = false;
+            }
+        };
+        var parseData = function (data) {
+            // if (data.errorsMap.karat_data) {
+            //     $scope.KaratError = "Произошла ошибка при загрузке данных: " + data.errorsMap.karat_data;
+            // } else {
+            //     $scope.karatData = data.karatData;
+            // }
+            if (data.Error) {
+                if (!(data.Error === "")) {
+                    showToast("Произошла ошибка: " + data.Error);
+                }
+            }
+
+            if (data.sauter_read_day_sp_rk1) {
+                changeVal("dayTemp", data.sauter_read_day_sp_rk1.value);
+                hideToast("Значение дневной уставки установлено")
+            }
+            if (data.sauter_read_night_sp_rk1) {
+                changeVal("nightTemp", data.sauter_read_night_sp_rk1.value);
+                hideToast("Значение ночной уставки установлено")
+            }
+            if (data.sauter_read_coil) {
+                changeSauterCoilVal(data.sauter_read_coil);
+                hideToast("Положение насоса установлено")
 
             }
-        });
+        };
 
 
         $scope.zoomIn = function () {

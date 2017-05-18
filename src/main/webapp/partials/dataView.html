@@ -3,28 +3,28 @@
 
         <md-content>
             <md-tabs md-dynamic-height md-border-bottom>
-                <md-tab label="КАРАТ-307">
-                    <md-content class="md-padding">
-                        <h1 class="md-display-2">КАРАТ-307</h1>
-                        <div layout="row" layout-sm="column" layout-align="space-around">
-                            <md-progress-circular md-mode="indeterminate" class="md-accent"
-                                                  ng-if="karatDataLoading"></md-progress-circular>
-                        </div>
-                        <h3>{{KaratError}}</h3>
-                        <md-list ng-repeat="data in karatData track by $index">
-                            <md-list-item class="md-3-line row">
-                                <img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"
-                                     alt="icon">
-                                <div class="md-list-item-text">
-                                    <h3>{{data.name}}</h3>
-                                    <h4>{{data.value}}</h4>
-                                </div>
-                                <md-divider md-inset ng-if="!$last"></md-divider>
-                            </md-list-item>
-                        </md-list>
+                <!--<md-tab label="КАРАТ-307">-->
+                    <!--<md-content class="md-padding">-->
+                        <!--<h1 class="md-display-2">КАРАТ-307</h1>-->
+                        <!--<div layout="row" layout-sm="column" layout-align="space-around">-->
+                            <!--<md-progress-circular md-mode="indeterminate" class="md-accent"-->
+                                                  <!--ng-if="karatDataLoading"></md-progress-circular>-->
+                        <!--</div>-->
+                        <!--<h3>{{KaratError}}</h3>-->
+                        <!--<md-list ng-repeat="(key, value) in karatData">-->
+                            <!--<md-list-item class="md-3-line row">-->
+                                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                                     <!--alt="icon">-->
+                                <!--<div class="md-list-item-text">-->
+                                    <!--<h3>{{key}}</h3>-->
+                                    <!--<h4>{{value}}</h4>-->
+                                <!--</div>-->
+                                <!--<md-divider md-inset ng-if="!$last"></md-divider>-->
+                            <!--</md-list-item>-->
+                        <!--</md-list>-->
 
-                    </md-content>
-                </md-tab>
+                    <!--</md-content>-->
+                <!--</md-tab>-->
                 <md-tab label="SAUTER EQJV125">
                     <md-content class="md-padding">
                         <h1 class="md-display-2">SAUTER EQJV125</h1>
@@ -35,16 +35,17 @@
                                      alt="icon">
                                 <div class="md-list-item-text">
                                     <h2>Дневная температурная уставка</h2>
-
                                     <md-input-container class="md-block">
-                                        <md-progress-circular md-mode="indeterminate" class="md-accent"
-                                                              ng-if="sauterDayloading"></md-progress-circular>
-                                        <input ng-model="sauterDayTemp[0]" ng-if="!sauterDayloading" aria-label="qq" ng-disabled="sauterDayDisabled"/>
+                                        <input ng-model="sauterDayTemp"
+                                               aria-label="qq"
+                                               />
                                     </md-input-container>
                                     <div layout="row" layout-sm="column" layout-align="end">
-
+                                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                              ng-if="sauterDayloading"></md-progress-circular>
                                         <md-button class="md-raised" ng-click="setSauterDayTemp()"
-                                                   style="" ng-if="!sauterDayloading"  ng-disabled="sauterDayDisabled">Установить
+                                                   style="" ng-if="!sauterDayloading" ng-disabled="sauterDayDisabled">
+                                            Установить
                                         </md-button>
                                     </div>
                                 </div>
@@ -56,15 +57,18 @@
                                     <h2>Ночная температурная уставка</h2>
 
                                     <md-input-container class="md-block">
-                                        <md-progress-circular md-mode="indeterminate" class="md-accent"
-                                                              ng-if="sauterNightLoading"></md-progress-circular>
 
-                                        <input ng-model="sauterNightTemp[0]" ng-if="!sauterNightLoading"  aria-label="qq" ng-disabled="sauterNightDisabled"/>
+
+                                        <input id="sauterNightTemp" ng-model="sauterNightTemp"
+                                               aria-label="qq"
+                                               ng-disabled="sauterNightDisabled"/>
                                     </md-input-container>
                                     <div layout="row" layout-sm="column" layout-align="end">
-
+                                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                              ng-if="sauterNightLoading"></md-progress-circular>
                                         <md-button class="md-raised" ng-click="setSauterNightTemp()"
-                                                   ng-if="!sauterNightLoading" ng-disabled="sauterNightDisabled">Установить
+                                                   ng-if="!sauterNightLoading" ng-disabled="sauterNightDisabled">
+                                            Установить
                                         </md-button>
                                     </div>
 
@@ -75,19 +79,15 @@
                                      alt="icon">
                                 <div class="md-list-item-text">
                                     <h2>Насос</h2>
-                                    <md-progress-circular md-mode="indeterminate" class="md-accent"
-                                                          ng-if="sauterCoilLoading"></md-progress-circular>
-                                    <md-input-container class="md-block"  ng-if="!sauterCoilLoading">
-                                        <md-radio-group ng-model="sauterCoilVal" >
-
-                                            <md-radio-button ng-value="1" ng-click="sauterChange(1)" class="md-primary">Включен</md-radio-button>
-                                            <md-radio-button ng-value="0" ng-click="sauterChange(0)" class="md-primary"> Выключен </md-radio-button>
-
-                                        </md-radio-group>
-
-                                    </md-input-container>
+                                    <md-radio-group ng-model="sauterCoilVal">
+                                        <md-radio-button ng-value="1" class="md-primary"> Включен
+                                        </md-radio-button>
+                                        <md-radio-button ng-value="0" class="md-primary">Выключен
+                                        </md-radio-button>
+                                    </md-radio-group>
                                     <div layout="row" layout-sm="column" layout-align="end">
-
+                                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                              ng-if="sauterCoilLoading"></md-progress-circular>
                                         <md-button class="md-raised" ng-click="setSauterCoil()"
                                                    ng-if="!sauterCoilLoading" ng-disabled="coilDisabled">
                                             Установить
@@ -102,14 +102,24 @@
                                      alt="icon">
                                 <div class="md-list-item-text">
                                     <h2>Трёхпозиционный клапан</h2>
+
+
                                     <md-radio-group ng-model="controlVal">
-                                        <md-radio-button value="0" class="md-primary">0%</md-radio-button>
-                                        <md-radio-button value="42" class="md-primary">42%</md-radio-button>
-                                        <md-radio-button value="100" class="md-primary">100%</md-radio-button>
+                                        <md-radio-button ng-value="0"
+                                                         class="md-primary">0%
+                                        </md-radio-button>
+                                        <md-radio-button ng-value="30"
+                                                         class="md-primary">30%
+                                        </md-radio-button>
+                                        <md-radio-button ng-value="100"
+                                                         class="md-primary">100%
+                                        </md-radio-button>
                                     </md-radio-group>
                                     <div layout="row" layout-sm="column" layout-align="end">
-
-                                        <md-button class="md-raised" ng-click="setSauterControlVal()">Установить
+                                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                              ng-if="sauterControlLoading"></md-progress-circular>
+                                        <md-button ng-if="!sauterControlLoading" class="md-raised"
+                                                   ng-click="setSauterControlVal()">Установить
                                         </md-button>
                                     </div>
                                 </div>

@@ -35,16 +35,20 @@ CREATE TABLE LINK_DATA (
   color VARCHAR(10)
 );
 
-CREATE TABLE NODE_DATA(
-  id SERIAL PRIMARY KEY NOT NULL,
+CREATE TABLE node_data
+(
+  id INTEGER DEFAULT nextval('node_data_id_seq'::regclass) PRIMARY KEY NOT NULL,
   key VARCHAR(30) NOT NULL,
   category VARCHAR(50),
-  pos VARCHAR(100) NOT NULL,
+  pos VARCHAR(100),
   text VARCHAR(255),
-  angle INT,
+  angle INTEGER,
   scheme_id INTEGER,
-  CONSTRAINT node_data_schemes_id_fk FOREIGN KEY (sheme_id) REFERENCES schemes (id)
+  layer VARCHAR(30),
+  CONSTRAINT node_data_schemes_id_fk FOREIGN KEY (scheme_id) REFERENCES schemes (id)
 );
+CREATE UNIQUE INDEX node_data_pkey ON public.node_data (id);
+
 
 CREATE TABLE UPLOADED_FILES (
   id SERIAL PRIMARY KEY,
@@ -52,10 +56,10 @@ CREATE TABLE UPLOADED_FILES (
 );
 
 CREATE TABLE images (
-  id SERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY NOT NULL,
   image_name TEXT,
   img BYTEA,
-  scheme_id INT NOT NULL;
+  scheme_id INT NOT NULL
 );
 
 CREATE TABLE schemes (

@@ -1,12 +1,10 @@
 package ru.konsort.la.web.controller;
 
-import com.google.gson.Gson;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.konsort.la.persist.entity.*;
@@ -101,11 +99,14 @@ public class SchemeController {
     @RequestMapping(value = "/scheme/getImgBySchemeId", method = RequestMethod.GET)
     public void getImgBySchemeId(@RequestParam(value = "schemeId") Long schemeId, HttpServletResponse response) throws IOException {
         Image image = imageRepo.findBySchemeId(schemeId);
-        OutputStream outputStream = response.getOutputStream();
+        if (image != null) {
+            OutputStream outputStream = response.getOutputStream();
 
-        outputStream.write(image.getImg());
-        outputStream.flush();
-        outputStream.close();
+            outputStream.write(image.getImg());
+            outputStream.flush();
+            outputStream.close();
+        }
+
     }
 
     @RequestMapping(value = "/scheme/getImageIds", method = RequestMethod.GET)
