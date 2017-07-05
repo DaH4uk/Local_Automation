@@ -25,7 +25,7 @@ public class NodeData {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "pos", nullable = false)
+    @Column(name = "pos")
     private String pos;
 
     @Column(name = "text")
@@ -33,6 +33,13 @@ public class NodeData {
 
     @Column(name = "angle")
     private Integer angle;
+
+    @JsonIgnore
+    @Column(name = "scheme_id")
+    private Long schemeId;
+
+    @Column(name = "layer")
+    private String layer;
 
     public Long getId() {
         return id;
@@ -80,5 +87,21 @@ public class NodeData {
 
     public void setAngle(Integer angle) {
         this.angle = angle;
+    }
+
+    public Long getSchemeId() {
+        return schemeId;
+    }
+
+    public void setSchemeId(Long schemeId) {
+        this.schemeId = schemeId;
+    }
+
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
     }
 }

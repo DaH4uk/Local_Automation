@@ -11,29 +11,19 @@
     </md-toolbar>
 
     <md-dialog-content>
-        <form>
+        <form name="forma">
             <div class="md-dialog-content">
                 <h2>Выберите изображение для загрузки</h2>
                 <p>
                 <div class="row">
-
                     <div class="col-md-3">
-
-
-                        <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
-                        <lf-ng-md-file-input lf-files="files" type="file"
-                                             lf-option="optoin08"
+                        <lf-ng-md-file-input name="files" lf-files="files" type="file"
                                              lf-placeholder="Выберите изображение" lf-browse-label="Обзор"
-                                             lf-remove-label="Удалить" multiple drag preview
-                                             progress></lf-ng-md-file-input>
+                                             lf-remove-label="Удалить" lf-required lf-maxcount="5" lf-filesize="10MB"
+                                             lf-totalsize="20MB" lf-mimetype="image/*" drag
+                                             preview></lf-ng-md-file-input>
+
                     </div>
-
-                    <br/><br/>
-                    <md-button class="md-raised md-primary" ng-click="upload()">Загрузить</md-button>
-                <br/><br/>
-                    <md-progress-linear ng-if="showProgress" md-mode="determinate"
-                                        value="{{progress}}"></md-progress-linear>
-
                 </div>
             </div>
         </form>
@@ -44,7 +34,9 @@
     <md-dialog-actions layout="row">
         <span flex></span>
         <md-button ng-click="hide()">
-            Готово
+            Отмена
         </md-button>
+        <md-button class="md-raised md-primary" ng-click="upload()">Загрузить</md-button>
+
     </md-dialog-actions>
 </md-dialog>

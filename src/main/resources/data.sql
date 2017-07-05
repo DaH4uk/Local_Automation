@@ -1,5 +1,5 @@
 INSERT INTO users (first_name, family_name, login, password, e_mail, phone, language, enabled)
-VALUES ('Danil', 'Turov', 'admin', 'admin', 'turovdanil@mail.ru', '89124999334', 'ru', TRUE);
+VALUES ('Admin', 'Admin', 'admin', 'admin', 'admin@konsort.ru', '+7123456789', 'ru', TRUE);
 INSERT INTO users (first_name, family_name, login, password, e_mail, phone, language, enabled)
 VALUES ('User', 'User', 'user', 'user', 'user@mail.ru', '8564564', 'ru', TRUE);
 
@@ -12,6 +12,7 @@ INSERT INTO users_authority (id_user, id_authority) VALUES (1, 2);
 INSERT INTO users_authority (id_user, id_authority) VALUES (1, 3);
 INSERT INTO users_authority (id_user, id_authority) VALUES (2, 3);
 INSERT INTO users_authority (id_user, id_authority) VALUES (3, 3);
+
 
 -- INSERT INTO NODE_DATA (key, pos, text) VALUES ('P1', '0 0', 'Process');
 -- INSERT INTO NODE_DATA (key, category, pos, text) VALUES ('P2', 'Process', '450 200', 'Tank');

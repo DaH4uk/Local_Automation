@@ -13,15 +13,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
+import ru.konsort.la.persist.repo.ControllerDataRepo;
+import ru.konsort.la.persist.repo.ControllerDataRepoImpl;
+import ru.konsort.la.service.ControllerDataService;
+import ru.konsort.la.service.HttpLocalService;
+import ru.konsort.la.service.Impl.ControllerDataServiceImpl;
+import ru.konsort.la.service.Impl.HttpLocalServiceImpl;
+import ru.konsort.la.service.Impl.WebSocketClientServiceImpl;
+import ru.konsort.la.service.WebSocketClientService;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.ServletContext;
 
 @Configuration
-@Import({SecurityConfig.class})
+@Import({SecurityConfig.class, WebSocketConfig.class, SchedulingConfig.class})
 @EnableWebMvc
 @EnableSwagger2
-@ComponentScan(basePackages = { "ru.konsort.la.web.controller" })
+@ComponentScan(basePackages = { "ru.konsort.la.web.controller"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean
@@ -61,6 +69,27 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         commonsMultipartResolver.setMaxUploadSize(1052428800);
         return commonsMultipartResolver;
     }
+    @Bean(name = "controllerDataRepo")
+    public ControllerDataRepo controllerDataRepo(){
+        return new ControllerDataRepoImpl();
+    }
+
+    @Bean(name = "controllerService")
+    public ControllerDataService controllerService() {
+        return new ControllerDataServiceImpl();
+    }
+
+    @Bean(name = "httpLocalService")
+    public HttpLocalService httpLocalService(){
+        return new HttpLocalServiceImpl();
+    }
+
+    @Bean(name = "webSocketClientService")
+    public WebSocketClientService webSocketClientService(){
+        return new WebSocketClientServiceImpl();
+    }
+
+
 
 
 

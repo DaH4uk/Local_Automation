@@ -1,6 +1,22 @@
-<div id="diagram" style="border: none; width:100%; height:93vh; padding-top: -8px; position:relative;"></div>
+<div id="diagram" style="border: none; width:100%; height:93vh; padding-top: -8px; position:relative; background-color: white;"></div>
 
-<md-button class="md-fab fab" style="background-color: #F50057;" aria-label="Редактировать" ng-href="#/schemeEdit">
+<md-button class="md-fab md-raised md-mini" style="position: absolute; right: 60px;top: 68vh;" aria-label="Zoom in" ng-click="zoomIn()">
+    <md-tooltip md-direction="left">
+        Увеличить схему
+    </md-tooltip>
+    <md-icon md-svg-src="../resources/img/icons/ic_add_black_24px.svg">
+    </md-icon>
+</md-button>
+
+<md-button class="md-fab md-raised md-mini" style="position: absolute; right: 60px;top: 75vh;" aria-label="Zoom out" ng-click="zoomOut()">
+    <md-tooltip md-direction="left">
+        Уменьшить схему
+    </md-tooltip>
+    <md-icon md-svg-src="../resources/img/icons/ic_remove_black_24px.svg">
+    </md-icon>
+</md-button>
+
+<md-button class="md-fab fab" style="background-color: #F50057;" aria-label="Редактировать" ng-href="#/schemeEdit/{{schemeId}}">
     <md-tooltip md-direction="left">
         Редактировать схему
     </md-tooltip>

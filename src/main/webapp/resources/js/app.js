@@ -1,7 +1,7 @@
 'use strict';
 
 var myapp = angular
-    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'spinkitLoader', 'ngMaterial', 'angularFileUpload', 'lfNgMdFileInput']);
+    .module('myApp', ['ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'spinkitLoader', 'ngMaterial', 'angularFileUpload', 'lfNgMdFileInput', 'AngularStompDK', 'angular-notification-icons']);
 
 
 myapp.constant('USER_ROLES', {
@@ -10,6 +10,12 @@ myapp.constant('USER_ROLES', {
     user: 'user'
 });
 
+myapp.config(function(ngstompProvider){
+    ngstompProvider
+        .url('/hello')
+        .credential('login', 'password')
+        .class(SockJS); // <-- Will be used by StompJS to do the connection
+});
 
 myapp.config(function ($routeProvider, USER_ROLES) {
 
@@ -22,7 +28,7 @@ myapp.config(function ($routeProvider, USER_ROLES) {
         }
     }).when('/', {
         redirectTo: '/home'
-    }).when('/schemeView', {
+    }).when('/schemeView/:id', {
         templateUrl: 'partials/schemeView.html',
         controller: 'SchemeViewCtrl',
         access: {
@@ -36,7 +42,7 @@ myapp.config(function ($routeProvider, USER_ROLES) {
             loginRequired: true,
             authorizedRoles: [USER_ROLES.admin]
         }
-    }).when('/schemeEdit',{
+    }).when('/schemeEdit/:id',{
         templateUrl: 'partials/schemeEdit.html',
         controller: 'SchemeEditCtrl',
         access: {
@@ -180,7 +186,6 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
 
     // Call when the the client is confirmed
     $rootScope.$on('event:auth-loginConfirmed', function (event, data) {
-        console.log('login confirmed start ' + data);
         $rootScope.loadingAccount = false;
         var nextLocation = ($rootScope.requestedUrl ? $rootScope.requestedUrl : "/home");
         var delay = ($location.path() === "/loading" ? 1500 : 0);
@@ -222,16 +227,6 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
     // Get already authenticated user account
     AuthSharedService.getAccount();
 
-    $rootScope.$on('$routeChangeSuccess', function () {
-        $http.get("scheme/nodes")
-            .success(function (response) {
-                $rootScope.nodes = response;
-            });
-        $http.get("scheme/links")
-            .success(function (response) {
-                $rootScope.links = response;
-            });
-    });
 });
 
 
