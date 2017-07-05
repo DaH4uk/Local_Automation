@@ -36,7 +36,7 @@ public class WebSocketController {
 
     @MessageMapping("/hello")
     @SendTo("/data/updater")
-    public Map<String, RegisterData> greeting(String message) throws Exception {
+    public Map<String, String> greeting(String message) throws Exception {
         return controllerDataRepo.findAll();
     }
 
@@ -49,34 +49,40 @@ public class WebSocketController {
         String registerName = "";
         switch (element) {
             case "day_setpoint_rk1":
-                registerName = "sauter_read_day_sp_rk1";
+                registerName = "Daysetpoint";
                 break;
             case "night_setpoint_rk1":
-                registerName = "sauter_read_night_sp_rk1";
+                registerName = "Nightsetpoint";
                 break;
             case "write_coil_57":
-                registerName = "sauter_read_coil";
+                registerName = "bitTerminal6";
                 break;
             case "control_rk1":
-                registerName = "sauter_get_control_rk1";
+                registerName = "ControlSignalRK1";
                 break;
             default:
                 break;
         }
 
 
-        RegisterData registerData = controllerDataRepo.findRegisterByName(registerName);
+        String value = "";
         if ("1".equals(jsonObject.get("value").getAsString())) {
-            registerData.setValue("true");
+            value = "true";
         } else if ("0".equals(jsonObject.get("value").getAsString())) {
-            registerData.setValue("false");
+            value = "false";
         } else {
-            registerData.setValue(jsonObject.get("value").getAsString());
+            value = jsonObject.get("value").getAsString();
         }
-        controllerDataRepo.save(registerName, registerData);
+        controllerDataRepo.save(registerName, value);
         String res = controllerDataService.setData(jsonObject.get("element").getAsString(), jsonObject.get("value").getAsString());
         webSocketClientService.sendToClients();
         return res;
+    }
+
+    @MessageMapping("/ECL300")
+    @SendTo("/data/updater")
+    public void onEclMessage(String msg) throws Exception {
+        webSocketClientService.sendMessage(msg);
     }
 
 

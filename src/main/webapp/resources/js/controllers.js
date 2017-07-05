@@ -146,25 +146,114 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 showToast("Произошла ошибка: " + data.Error);
             }
 
-            if (data.sauter_read_day_sp_rk1) {
-                $scope.sauterDayTemp = data.sauter_read_day_sp_rk1.value;
+            if (data.Daysetpoint) {
+                $scope.sauterDayTemp = data.Daysetpoint;
                 $scope.sauterDayloading = false;
             }
-            if (data.sauter_read_night_sp_rk1) {
-                $scope.sauterNightTemp = data.sauter_read_night_sp_rk1.value;
+
+            if (data.Nightsetpoint) {
+                $scope.sauterNightTemp = data.Nightsetpoint;
                 $scope.sauterNightLoading = false;
             }
-            if (data.sauter_read_coil) {
-                if (data.sauter_read_coil.value === "true") {
+            if (data.bitTerminal6) {
+                if (data.bitTerminal6 === "true") {
                     $scope.sauterCoilVal = 1;
                 } else {
                     $scope.sauterCoilVal = 0;
                 }
                 $scope.sauterCoilLoading = false;
             }
-            if (data.sauter_get_control_rk1) {
-                $scope.controlVal = data.sauter_get_control_rk1.value;
+            if (data.ControlSignalRK1) {
+                $scope.controlVal = data.ControlSignalRK1;
                 $scope.sauterControlLoading = false;
+            }
+
+
+            $scope.ATHeatOffRK1 = data.ATHeatOffRK1;
+            $scope.ControlSignalRK1 = data.ControlSignalRK1;
+            $scope.CyclicalinitModem = data.CyclicalinitModem;
+            $scope.Date = data.Date;
+            $scope.DeviceStatus = data.DeviceStatus;
+            $scope.DeviceStatusArchive = data.DeviceStatusArchive;
+            $scope.DialPauseModem = data.DialPauseModem;
+            $scope.DialRepeatModem = data.DialRepeatModem;
+            $scope.Errorcounter = data.Errorcounter;
+            $scope.Firmwareversion = data.Firmwareversion;
+            $scope.Flowsetpoint = data.Flowsetpoint;
+            $scope.Hardwareversion = data.Hardwareversion;
+            $scope.FlowtempVF1 = data.FlowtempVF1;
+            $scope.Maxflowtemp = data.Maxflowtemp;
+            $scope.Minflowtemp = data.Minflowtemp;
+            $scope.ModeRK1 = data.ModeRK1;
+            $scope.OutdoortempAF1 = data.OutdoortempAF1;
+            $scope.Productnumber = data.Productnumber;
+            $scope.Proportionalband = data.Proportionalband;
+            $scope.Resettime = data.Resettime;
+            $scope.RoomtempRF1 = data.RoomtempRF1;
+            $scope.Runtimeforactuator = data.Runtimeforactuator;
+            $scope.Slopeofheating = data.Slopeofheating;
+            $scope.Switchposition = data.Switchposition;
+            $scope.Time = data.Time;
+            $scope.TimeoutModem = data.TimeoutModem;
+            $scope.WriteenableModem = data.WriteenableModem;
+            $scope.Year = data.Year;
+            $scope.bitCollective = data.bitCollective;
+            $scope.bitControlelement = data.bitControlelement;
+            $scope.bitDialiferror = data.bitDialiferror;
+            $scope.bitDisablemodem = data.bitDisablemodem;
+            $scope.bitHeatingmediumpump = data.bitHeatingmediumpump;
+            $scope.bitManualmode = data.bitManualmode;
+            $scope.bitOperatingmode = data.bitOperatingmode;
+            $scope.bitSetpointvalueTf = data.bitSetpointvalueTf;
+            $scope.bitTimeout = data.bitTimeout;
+            $scope.system = data.system;
+
+            if (data.register) {
+                if (data.register === "1") {
+                    $scope.readMode1 = data.value;
+                    $scope.isLoadingreadMode1 = false;
+
+                } else if (data.register === "2") {
+                    $scope.readMode2 = data.value;
+                    $scope.isLoadingreadMode2 = false;
+
+                } else if (data.register === "3") {
+                    $scope.readMode3 = data.value;
+                    $scope.isLoadingreadMode3 = false;
+
+                }
+                if (!data.value || data.value === "true") {
+                    if (data.value !== "true")
+                        showToast(data.error, 3);
+                    $scope.eclReadItems.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                        }
+                    });
+                    $scope.eclWriteRegisters.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                        }
+                    })
+                } else {
+                    $scope.eclReadItems.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                            item.value = data.value;
+                        }
+                    });
+                    $scope.eclWriteRegisters.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                            item.value = data.value;
+                        }
+                    })
+                }
+            }
+
+            if (data.app_type) {
+                $scope.appType = data.app_type;
+                $scope.isAppTypeLoading = false;
             }
         };
 
@@ -173,14 +262,14 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $scope.sauterDayloading = true;
             ngstomp.send("/app/set", {
                 element: "day_setpoint_rk1",
-                value: $("#sauterDayTemp").val()
+                value: $scope.sauterDayTemp
             });
         };
         $scope.setSauterNightTemp = function () {
             $scope.sauterNightLoading = true;
             ngstomp.send("/app/set", {
                 element: "night_setpoint_rk1",
-                value: $("#sauterNightTemp").val()
+                value: $scope.sauterNightTemp
             });
         };
         $scope.setSauterCoil = function () {
@@ -204,6 +293,134 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             ngstomp.unsubscribe("/data/updater");
         });
 
+        $scope.eclReadItems = [
+            {
+                name: "Sensor 1",
+                path: "sensor_1",
+                isLoading: false
+            }, {
+                name: "Sensor 2",
+                path: "sensor_2",
+                isLoading: false
+            }, {
+                name: "Sensor 3",
+                path: "sensor_3",
+                isLoading: false
+            }, {
+                name: "Sensor 4",
+                path: "sensor_4",
+                isLoading: false
+            }, {
+                name: "Sensor 5",
+                path: "sensor_5",
+                isLoading: false
+            }, {
+                name: "Sensor 6",
+                path: "sensor_6",
+                isLoading: false
+            }, {
+                name: "Room temperature circuit 1",
+                path: "room_temp_c1",
+                isLoading: false
+            }, {
+                name: "Room temperature circuit 2",
+                path: "room_temp_c2",
+                isLoading: false
+            }, {
+                name: "Calculated return temperature Circuit 1",
+                path: "calc_ret_temp_c1",
+                isLoading: false
+            }, {
+                name: "Calculated return temperature Circuit 2",
+                path: "calc_ret_temp_c2",
+                isLoading: false
+            }, {
+                name: "Calculated flow temperature Circuit 1",
+                path: "calc_flow_temp_c1",
+                isLoading: false
+            }, {
+                name: "Calculated flow temperature Circuit 2",
+                path: "calc_flow_temp_c2",
+                isLoading: false
+            }, {
+                name: "Outdoor temperature",
+                path: "outdoor_temp",
+                isLoading: false
+            }
+        ];
+
+        $scope.eclWriteRegisters = [{
+            name: "Параллельное смещение",
+            path: "parallel_displacement_c1",
+            isLoading: false,
+            min: -9,
+            max: 9
+        }, {
+            name: "Минимальная температура потока",
+            path: "flow_temp_min_c1",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }, {
+            name: "Максимальная температура потока",
+            path: "flow_temp_max_c1",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }, {
+            name: "Дневная температура горячей воды",
+            path: "hw_temp_day_sp",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }, {
+            name: "Ночная температура горячей воды",
+            path: "hw_temp_night_sp",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }];
+
+        $scope.getEclRam = function (item) {
+            var path = item.path;
+            item.isLoading = true;
+            ngstomp
+                .send('/app/ECL300', "read_ram " + path);
+        };
+        $scope.getEclEerom = function (item) {
+            var path = item.path;
+            item.isLoading = true;
+            ngstomp
+                .send('/app/ECL300', "read_eeprom " + path);
+        };
+
+        $scope.getEclReadMode = function (val) {
+            if (val === 1) {
+                $scope.isLoadingreadMode1 = true;
+            }
+            if (val === 2) {
+                $scope.isLoadingreadMode2 = true;
+            }
+            if (val === 3) {
+                $scope.isLoadingreadMode3 = true;
+            }
+
+            ngstomp
+                .send('/app/ECL300', "read_mode " + val);
+        };
+
+        $scope.getEclAppType = function () {
+            $scope.isAppTypeLoading = true;
+            ngstomp
+                .send('/app/ECL300', "read_app_type");
+        };
+
+        $scope.setEclVal = function (item) {
+            item.isLoading = true;
+            ngstomp.send("/app/ECL300", "write " + item.path + " " + item.value);
+
+            console.log(item);
+        }
     })
     .controller('ImgUplDlgCtrl', function ($scope, $http, $mdDialog, $location, $rootScope) {
         $scope.upload = function () {
@@ -359,7 +576,8 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             {name: "Насос", icon: "pump.svg", category: "Pump", width: "24"},
             // {name: "Контроллер", icon: "controller.svg", category: "Controller", width: "44"},
             {name: "Дневная тепература", icon: "tempCtrl.png", category: "dayTemp", width: "24"},
-            {name: "Ночная тепература", icon: "tempCtrl.png", category: "nightTemp", width: "24"}
+            {name: "Ночная тепература", icon: "tempCtrl.png", category: "nightTemp", width: "24"},
+            {name: "Трехпозиционный клапан", icon: "threeWayValve.svg", category: "threeWayValve", width: "24"}
         ];
 
         SchemeService.getImagesIds().$promise.then(function (res) {
@@ -630,6 +848,35 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     new go.Binding("text").makeTwoWay()
                 )));
 
+        myDiagram.nodeTemplateMap.add("threeWayValve",
+            $(go.Node, go.Panel.Spot,
+                {
+                    locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+                    selectionObjectName: "SHAPE", rotatable: true
+                },
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("layerName", "layer"),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(50, 50),
+                    source: "/resources/img/icons/scheme/threeWayValve.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()
+                )));
+
 
         myDiagram.nodeTemplateMap.add("dayTemp",
             $(go.Node, go.Panel.Position,
@@ -871,7 +1118,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 }
                 $scope.nodes.forEach(function (val) {
                     if (val.category !== "image") {
-                        console.log(val);
                         val.layer = "Foreground";
                     }
                 });
@@ -1078,6 +1324,35 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     new go.Binding("text").makeTwoWay()
                 )));
 
+
+        myDiagram.nodeTemplateMap.add("threeWayValve",
+            $(go.Node, go.Panel.Spot,
+                {
+                    locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+                    selectionObjectName: "SHAPE", rotatable: true
+                },
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("layerName", "layer"),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(50, 50),
+                    source: "/resources/img/icons/scheme/threeWayValve.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()
+                )));
 
         myDiagram.nodeTemplateMap.add("dayTemp",
             $(go.Node, go.Panel.Position,
@@ -1352,8 +1627,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         };
 
         var changeSauterCoilVal = function (val) {
-            $log.info(val.value);
-            if (val.value === "true") {
+            if (val === "true") {
                 changePumpColor("#15dd00");
                 $scope.sauterCoilVal = 1;
             } else {
@@ -1376,29 +1650,21 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             }
         };
         var parseData = function (data) {
-            // if (data.errorsMap.karat_data) {
-            //     $scope.KaratError = "Произошла ошибка при загрузке данных: " + data.errorsMap.karat_data;
-            // } else {
-            //     $scope.karatData = data.karatData;
-            // }
-            if (data.Error) {
-                if (!(data.Error === "")) {
-                    showToast("Произошла ошибка: " + data.Error);
-                }
-            }
-
-            if (data.sauter_read_day_sp_rk1) {
-                changeVal("dayTemp", data.sauter_read_day_sp_rk1.value);
+            if (data.Daysetpoint) {
+                changeVal("dayTemp", data.Daysetpoint);
                 hideToast("Значение дневной уставки установлено")
             }
-            if (data.sauter_read_night_sp_rk1) {
-                changeVal("nightTemp", data.sauter_read_night_sp_rk1.value);
+            if (data.Nightsetpoint) {
+                changeVal("nightTemp", data.Nightsetpoint);
                 hideToast("Значение ночной уставки установлено")
             }
-            if (data.sauter_read_coil) {
-                changeSauterCoilVal(data.sauter_read_coil);
+            if (data.bitTerminal6) {
+                changeSauterCoilVal(data.bitTerminal6);
                 hideToast("Положение насоса установлено")
-
+            }
+            if (data.ControlSignalRK1) {
+                changeVal("threeWayValve", data.ControlSignalRK1);
+                hideToast("Положение трехпозиционного клапана установлено");
             }
         };
 
@@ -1423,7 +1689,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
     })
     .controller('TokensController', function ($scope, UsersService, TokensService, $q) {
 
-        var browsers = ["Firefox", 'Chrome', 'Trident']
+        var browsers = ["Firefox", 'Chrome', 'Trident'];
 
         $q.all([
             UsersService.getAll().$promise,

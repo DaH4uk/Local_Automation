@@ -8,9 +8,9 @@ import java.util.Map;
  * Created by turov on 06.05.2017.
  */
 public interface ControllerDataRepo {
-    void save(String registerName, RegisterData registerData);
+    void save(String registerName, String registerData);
 
-    RegisterData findRegisterByName(String registerName);
+    String findRegisterByName(String registerName);
 
-    Map<String, RegisterData> findAll();
+    Map<String, String> findAll();
 }

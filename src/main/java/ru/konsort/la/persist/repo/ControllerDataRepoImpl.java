@@ -1,6 +1,5 @@
 package ru.konsort.la.persist.repo;
 
-import ru.konsort.la.model.RegisterData;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,18 +12,18 @@ public class ControllerDataRepoImpl implements ControllerDataRepo {
     /**
      * RegisterName/RegisterValue
      */
-    private Map<String, RegisterData> registerDataMap = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, String> registerDataMap = Collections.synchronizedMap(new HashMap<>());
 
-    public void save(String registerName, RegisterData registerData){
+    public void save(String registerName, String registerData){
         registerDataMap.put(registerName, registerData);
     }
 
-    public RegisterData findRegisterByName(String registerName){
+    public String findRegisterByName(String registerName){
         return registerDataMap.get(registerName);
     }
 
     @Override
-    public Map<String, RegisterData> findAll() {
+    public Map<String, String> findAll() {
         return registerDataMap;
     }
 }

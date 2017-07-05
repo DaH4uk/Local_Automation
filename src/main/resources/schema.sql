@@ -35,6 +35,11 @@ CREATE TABLE LINK_DATA (
   color VARCHAR(10)
 );
 
+CREATE TABLE schemes (
+  id SERIAL PRIMARY KEY ,
+  scheme_name TEXT
+);
+
 CREATE TABLE node_data
 (
   id INTEGER DEFAULT nextval('node_data_id_seq'::regclass) PRIMARY KEY NOT NULL,
@@ -62,7 +67,3 @@ CREATE TABLE images (
   scheme_id INT NOT NULL
 );
 
-CREATE TABLE schemes (
-  id SERIAL PRIMARY KEY ,
-  scheme_name TEXT
-);

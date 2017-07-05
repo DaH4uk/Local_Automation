@@ -11,4 +11,7 @@ public interface WebSocketClientService {
     void Connect() throws Exception;
 
     void sendToClients();
-}
+
+    void sendMessage(String msg) throws Exception;
+
+    }
