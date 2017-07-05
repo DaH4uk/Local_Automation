@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import ru.konsort.la.model.RegisterData;
 import ru.konsort.la.persist.repo.ControllerDataRepo;
 import ru.konsort.la.service.ControllerDataService;
-import ru.konsort.la.service.RegisterUpdateDataService;
 import ru.konsort.la.service.WebSocketClientService;
 
 import java.util.Map;

@@ -1,6 +1,30 @@
 'use strict';
 
 
+var eclReadItems = [
+    { name: "Sensor 1", icon: "ex", category: "sens", width: "24", path: "sensor_1", isLoading: false },
+    { name: "Sensor 2", icon: "ex", category: "sens2", width: "24", path: "sensor_2", isLoading: false },
+    { name: "Sensor 3", icon: "ex", category: "sens3", width: "24", path: "sensor_3", isLoading: false },
+    { name: "Sensor 4", icon: "ex", category: "sens4", width: "24", path: "sensor_4", isLoading: false },
+    { name: "Sensor 5", icon: "ex", category: "sens5", width: "24", path: "sensor_5", isLoading: false },
+    { name: "Sensor 6", icon: "ex", category: "sens6", width: "24", path: "sensor_6", isLoading: false },
+    { name: "Room temp 1", icon: "ex", category: "roomTemp1", width: "24", path: "room_temp_c1", isLoading: false },
+    { name: "Room temp 2", icon: "ex", category: "roomTemp2", width: "24", path: "room_temp_c2", isLoading: false },
+    { name: "Calc return temp 1", icon: "ex", category: "CalcReturnTemp1", width: "24", path: "calc_ret_temp_c1", isLoading: false },
+    { name: "Calc return temp 2", icon: "ex", category: "CalcReturnTemp2", width: "24", path: "calc_ret_temp_c2", isLoading: false },
+    { name: "Calc flow temp 1", icon: "ex", category: "CalcFlowTemp1", width: "24", path: "calc_flow_temp_c1", isLoading: false },
+    { name: "Calc flow temp 2", icon: "ex", category: "CalcFlowTemp2", width: "24", path: "calc_flow_temp_c2", isLoading: false },
+    { name: "Outdoor temperature", icon: "ex", category: "OutdoorTemp", width: "24", path: "outdoor_temp", isLoading: false }
+];
+
+var eclWriteItems = [
+    { name: "Параллельное смещение", icon: "ex", category: "parallel_displacement_c1", width: "24", path: "parallel_displacement_c1", isLoading: false, min: -9, max: 9 },
+    { name: "Минимальная температура потока", icon: "ex", category: "flow_temp_min_c1", width: "24", path: "flow_temp_min_c1", isLoading: false, min: 10, max: 110 },
+    { name: "Максимальная температура потока", icon: "ex", category: "flow_temp_max_c1", width: "24", path: "flow_temp_max_c1", isLoading: false, min: 10, max: 110 },
+    { name: "Дневная температура горячей воды", icon: "ex", category: "hw_temp_day_sp", width: "24", path: "hw_temp_day_sp", isLoading: false, min: 10, max: 110 },
+    { name: "Ночная температура горячей воды", icon: "ex", category: "hw_temp_night_sp", width: "24", path: "hw_temp_night_sp", isLoading: false, min: 10, max: 110 }
+];
+
 myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedService, $mdBottomSheet) {
     $scope.showBottomSheet = function () {
         $mdBottomSheet.show({
@@ -293,93 +317,11 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             ngstomp.unsubscribe("/data/updater");
         });
 
-        $scope.eclReadItems = [
-            {
-                name: "Sensor 1",
-                path: "sensor_1",
-                isLoading: false
-            }, {
-                name: "Sensor 2",
-                path: "sensor_2",
-                isLoading: false
-            }, {
-                name: "Sensor 3",
-                path: "sensor_3",
-                isLoading: false
-            }, {
-                name: "Sensor 4",
-                path: "sensor_4",
-                isLoading: false
-            }, {
-                name: "Sensor 5",
-                path: "sensor_5",
-                isLoading: false
-            }, {
-                name: "Sensor 6",
-                path: "sensor_6",
-                isLoading: false
-            }, {
-                name: "Room temperature circuit 1",
-                path: "room_temp_c1",
-                isLoading: false
-            }, {
-                name: "Room temperature circuit 2",
-                path: "room_temp_c2",
-                isLoading: false
-            }, {
-                name: "Calculated return temperature Circuit 1",
-                path: "calc_ret_temp_c1",
-                isLoading: false
-            }, {
-                name: "Calculated return temperature Circuit 2",
-                path: "calc_ret_temp_c2",
-                isLoading: false
-            }, {
-                name: "Calculated flow temperature Circuit 1",
-                path: "calc_flow_temp_c1",
-                isLoading: false
-            }, {
-                name: "Calculated flow temperature Circuit 2",
-                path: "calc_flow_temp_c2",
-                isLoading: false
-            }, {
-                name: "Outdoor temperature",
-                path: "outdoor_temp",
-                isLoading: false
-            }
-        ];
+        $scope.eclReadItems = eclReadItems;
 
-        $scope.eclWriteRegisters = [{
-            name: "Параллельное смещение",
-            path: "parallel_displacement_c1",
-            isLoading: false,
-            min: -9,
-            max: 9
-        }, {
-            name: "Минимальная температура потока",
-            path: "flow_temp_min_c1",
-            isLoading: false,
-            min: 10,
-            max: 110
-        }, {
-            name: "Максимальная температура потока",
-            path: "flow_temp_max_c1",
-            isLoading: false,
-            min: 10,
-            max: 110
-        }, {
-            name: "Дневная температура горячей воды",
-            path: "hw_temp_day_sp",
-            isLoading: false,
-            min: 10,
-            max: 110
-        }, {
-            name: "Ночная температура горячей воды",
-            path: "hw_temp_night_sp",
-            isLoading: false,
-            min: 10,
-            max: 110
-        }];
+
+        $scope.eclWriteRegisters = eclReadItems;
+
 
         $scope.getEclRam = function (item) {
             var path = item.path;
@@ -580,10 +522,14 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             {name: "Трехпозиционный клапан", icon: "threeWayValve.svg", category: "threeWayValve", width: "24"}
         ];
 
+        $scope.EclItems = eclReadItems;
+
+        $scope.EclWriteItems = eclWriteItems;
+
+
         SchemeService.getImagesIds().$promise.then(function (res) {
             $scope.imageIds = res;
         });
-
         $scope.cancel = function () {
             $mdDialog.hide();
         };
@@ -591,7 +537,17 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         $scope.listItemClick = function ($index) {
             var clickedItem = $scope.items[$index];
             $mdBottomSheet.hide(clickedItem);
-            $rootScope.$emit('addItem', clickedItem.category, clickedItem.name);
+            $rootScope.$emit('addItem', clickedItem.category, clickedItem.name, true);
+        };
+        $scope.createEclItems = function ($index) {
+            var clickedItem = $scope.EclItems[$index];
+            $mdBottomSheet.hide(clickedItem);
+            $rootScope.$emit('addItem', clickedItem.category, clickedItem.name, false);
+        };
+        $scope.createEclWriteItems = function ($index) {
+            var clickedItem = $scope.EclWriteItems[$index];
+            $mdBottomSheet.hide(clickedItem);
+            $rootScope.$emit('addItem', clickedItem.category, clickedItem.name, false);
         };
     })
     .controller('SchemeEditCtrl', function ($scope, $timeout, $mdDialog, $mdToast, $rootScope, SchemeService, $routeParams, $mdBottomSheet, $window) {
@@ -934,6 +890,60 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     )
                 )));
 
+
+        var createDiagramItem = function (name, category) {
+            myDiagram.nodeTemplateMap.add(category,
+                $(go.Node, go.Panel.Position,
+                    new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                    new go.Binding("layerName", "layer"),
+                    $(go.Shape, "Rectangle",
+                        {
+                            name: "TABLESHAPE",
+                            position: new go.Point(0, 0),
+                            desiredSize: new go.Size(250, 80),
+                            fill: "#ffbe00", stroke: null
+                        }),
+                    $(go.TextBlock, {
+                        editable: true,
+                        font: "bold 11pt Verdana, sans-serif",
+                        position: new go.Point(0, 0),
+                        text: name
+                    }),
+                    $(go.Panel, "Auto",
+                        {
+                            column: 1,
+                            position: new go.Point(20, 30)
+                        },
+                        $(go.TextBlock,
+                            {
+                                font: "10pt Verdana, sans-serif",
+                                width: 50,
+                                text: "-"
+
+                            },
+                            new go.Binding("text").makeTwoWay(function (count) {
+                                return parseInt(count, 10);
+                            })
+                        )
+                    ),
+                    $(go.Panel, "Horizontal",
+                        {
+                            column: 2,
+                            position: new go.Point(80, 30)
+                        },
+                        $("Button",
+                            $(go.TextBlock, "Обновить", {margin: 3, desiredSize: new go.Size(70, 14)})
+                        )
+                    )));
+        };
+
+        eclReadItems.forEach(function (item) {
+            createDiagramItem(item.name, item.category);
+        });
+        eclWriteItems.forEach(function (item) {
+            createDiagramItem(item.name, item.category);
+        });
+
         myDiagram.nodeTemplateMap.add("nightTemp",
             $(go.Node, go.Panel.Position,
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -1164,9 +1174,11 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             myDiagram.isModified = false;
         });
 
-        $rootScope.$on('addItem', function (event, category, name) {
+        $rootScope.$on('addItem', function (event, category, name, isText) {
             if (category === "dayTemp" || category === "nightTemp") {
                 myDiagram.model.addNodeData({category: category, text: "-"});
+            } else if (!isText) {
+                myDiagram.model.addNodeData({category: category});
             } else {
                 myDiagram.model.addNodeData({category: category, text: name});
             }
@@ -1353,6 +1365,70 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                         return a === 180 ? 180 : 0;
                     }).ofObject()
                 )));
+
+
+
+        var createDiagramItem = function (name, category, path) {
+
+            myDiagram.nodeTemplateMap.add(category,
+                $(go.Node, go.Panel.Position,
+                    new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                    new go.Binding("layerName", "layer"),
+                    $(go.Shape, "Rectangle",
+                        {
+                            name: "TABLESHAPE",
+                            position: new go.Point(0, 0),
+                            desiredSize: new go.Size(250, 80),
+                            fill: "#ffbe00", stroke: null
+                        }),
+                    $(go.TextBlock, {
+                        editable: true,
+                        font: "bold 11pt Verdana, sans-serif",
+                        position: new go.Point(0, 0),
+                        text: name
+                    }),
+                    $(go.Panel, "Auto",
+                        {
+                            column: 1,
+                            position: new go.Point(20, 30)
+                        },
+                        $(go.TextBlock,
+                            {
+                                font: "10pt Verdana, sans-serif",
+                                width: 50,
+                                text: "-"
+
+                            },
+                            new go.Binding("text").makeTwoWay(function (count) {
+                                return parseInt(count, 10);
+                            })
+                        )
+                    ),
+                    $(go.Panel, "Horizontal",
+                        {
+                            column: 2,
+                            position: new go.Point(80, 30)
+                        },
+                        $("Button",
+                            {
+                                click: function () {
+                                    console.log(path);
+
+                                    ngstomp
+                                        .send('/app/ECL300', "read_ram " + path);
+                                }
+                            },
+                            $(go.TextBlock, "Обновить", {margin: 3, desiredSize: new go.Size(70, 14)})
+                        )
+                    )));
+        };
+
+        eclReadItems.forEach(function (item) {
+            createDiagramItem(item.name, item.category, item.path);
+        });
+        eclWriteItems.forEach(function (item) {
+            createDiagramItem(item.name, item.category, item.path);
+        });
 
         myDiagram.nodeTemplateMap.add("dayTemp",
             $(go.Node, go.Panel.Position,
@@ -1666,6 +1742,23 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 changeVal("threeWayValve", data.ControlSignalRK1);
                 hideToast("Положение трехпозиционного клапана установлено");
             }
+
+            if (data.register){
+                eclReadItems.forEach(function (item) {
+                    if (data.register === item.path){
+                        changeVal(item.category, data.value);
+                        showToast("Здачение для " + item.name + " установлено", 3);
+                    }
+                });
+                eclWriteItems.forEach(function (item) {
+                    if (data.register === item.path){
+                        changeVal(item.category, data.value);
+                        showToast("Здачение для " + item.name + " установлено", 3);
+                    }
+                });
+
+            }
+            $log.info(data);
         };
 
 

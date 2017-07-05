@@ -6,17 +6,38 @@
     </div>
     <md-tabs md-dynamic-height md-border-bottom>
 
-        <md-tab label="ECL-300">
+        <md-tab label="ECL-300 Read only">
 
             <md-content layout-gt-sm="row" layout-padding>
-                <div ng-repeat="item in items">
+                <div ng-repeat="item in EclItems">
                     <div flex-gt-xs="25" layout="row">
 
                         <md-card md-theme-watch>
                             <md-card-actions layout="row" layout-align="end center">
-                                <md-button class="md-grid-item-content" ng-click="listItemClick($index)">
-                                    <img style="height: 24px; width: {{item.width}}px"
-                                         src="resources/img/icons/scheme/{{item.icon}}"/>
+                                <md-button class="md-grid-item-content" ng-click="createEclItems($index)">
+                                    <img style="height: 24px; width: {{item.width}}px;"
+                                         src="resources/img/icons/scheme/{{item.icon}}.svg"/>
+                                    <div class="md-grid-text"> {{ item.name }}</div>
+                                </md-button>
+                            </md-card-actions>
+                        </md-card>
+
+                    </div>
+                </div>
+
+            </md-content>
+        </md-tab>
+        <md-tab label="ECL-300 Read/Write">
+
+            <md-content layout-gt-sm="row" layout-padding>
+                <div ng-repeat="item in EclWriteItems">
+                    <div flex-gt-xs="25" layout="row">
+
+                        <md-card md-theme-watch>
+                            <md-card-actions layout="row" layout-align="end center">
+                                <md-button class="md-grid-item-content" ng-click="createEclWriteItems($index)">
+                                    <img style="height: 24px; width: {{item.width}}px;"
+                                         src="resources/img/icons/scheme/{{item.icon}}.svg"/>
                                     <div class="md-grid-text"> {{ item.name }}</div>
                                 </md-button>
                             </md-card-actions>
