@@ -6,16 +6,64 @@
 
         <md-content>
             <md-tabs md-dynamic-height md-border-bottom>
-                <md-tab label="КАРАТ-307">
+                <md-tab label="ECL-300 Read ony">
                     <md-content class="md-padding">
-                        <h1 class="md-display-2">КАРАТ-307</h1>
-                        <md-list ng-repeat="data in karatData track by $index">
+                        <h1 class="md-display-2">ECL-300 Read only register</h1>
+                        <div layout="row" layout-sm="column" layout-align="space-around">
+                            <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                  ng-if="karatDataLoading"></md-progress-circular>
+                        </div>
+                        <span>Для чтения данных, пожалуйста выберите режим:</span>
+                        <br/>
+                        <br/>
+
+                        <md-button class="md-raised md-primary" ng-click="getEclReadMode(1)"
+                                   ng-if="!isLoadingreadMode1">Чтение состояния 1 схемы
+                        </md-button>
+                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                              ng-if="isLoadingreadMode1"></md-progress-circular>
+                        <md-button class="md-raised md-primary" ng-click="getEclReadMode(2)"
+                                   ng-if="!isLoadingreadMode2">Чтение состояния 2 схемы
+                        </md-button>
+                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                              ng-if="isLoadingreadMode2"></md-progress-circular>
+                        <md-button class="md-raised md-primary" ng-if="!isLoadingreadMode3"
+                                   ng-click="getEclReadMode(3)">Чтение состояния 3 схемы
+                        </md-button>
+                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                              ng-if="isLoadingreadMode3"></md-progress-circular>
+                        <md-button class="md-raised md-primary" ng-click="getEclAppType()" ng-if="!isAppTypeLoading">
+                            Чтение id приложения
+                        </md-button>
+                        <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                              ng-if="isAppTypeLoading"></md-progress-circular>
+                        <br/>
+                        <br/>
+                        <span ng-if="!isLoadingreadMode1 && isLoadingreadMode1 != undefined">Состояние 1 схемы: {{readMode1}}</span>
+                        <br/>
+                        <span ng-if="!isLoadingreadMode2 && isLoadingreadMode2 != undefined">Состояние 2 схемы: {{readMode2}}</span>
+                        <br/>
+                        <span ng-if="!isLoadingreadMode3 && isLoadingreadMode3 != undefined">Состояние 3 схемы: {{readMode3}}</span>
+                        <br/>
+                        <span ng-if="!isAppTypeLoading && isAppTypeLoading != undefined">Идентификатор приложения: {{appType}}</span>
+
+                        <md-list ng-repeat="item in eclReadItems">
                             <md-list-item class="md-3-line row">
                                 <img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"
                                      alt="icon">
                                 <div class="md-list-item-text">
-                                    <h3>Значение {{$index +1}}</h3>
-                                    <h4>{{data}}</h4>
+                                    <h2>{{item.name}}</h2>
+                                    <md-input-container class="md-block" ng-if="!item.isLoading">
+                                        <md-button class="md-raised md-primary" ng-click="getEclRam(item)">Чтение из
+                                            RAM
+                                        </md-button>
+                                        <!--<md-button class="md-raised md-primary" ng-click="getEclEerom(item)">Чтение из EEPROM</md-button>-->
+                                    </md-input-container>
+                                    <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                          ng-if="item.isLoading"></md-progress-circular>
+                                    <span ng-if="item.value != undefined">Значение: {{item.value}}</span>
+
+
                                 </div>
                                 <md-divider md-inset ng-if="!$last"></md-divider>
                             </md-list-item>
@@ -23,75 +71,596 @@
 
                     </md-content>
                 </md-tab>
-                <md-tab label="SAUTER EQJV125">
+                <md-tab label="ECL-300 Read/Write">
                     <md-content class="md-padding">
-                        <h1 class="md-display-2">SAUTER EQJV125</h1>
+                        <h1 class="md-display-2">ECL-300 Read/Write registers</h1>
+                        <div layout="row" layout-sm="column" layout-align="space-around">
+                            <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                  ng-if="karatDataLoading"></md-progress-circular>
+                        </div>
+                        <span>Перед изменением параметра, необходимо получить данные из памяти.</span>
+                        <br/>
+                        <br/>
 
-                        <md-list>
+
+                        <md-list ng-repeat="item in eclWriteRegisters">
                             <md-list-item class="md-3-line row">
                                 <img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"
                                      alt="icon">
                                 <div class="md-list-item-text">
-                                    <h2>Дневная температурная уставка</h2>
-
-                                    <md-input-container class="md-block">
-                                        <input ng-model="sauterDayTemp[0]"/>
-                                        <md-button class="md-raised" ng-click="setSauterDayTemp()">Установить</md-button>
+                                    <h2>{{item.name}}</h2>
+                                    <md-input-container class="md-block" ng-if="!item.isLoading">
+                                        <md-button class="md-raised md-primary" ng-click="getEclRam(item)">Чтение из
+                                            RAM
+                                        </md-button>
+                                        <md-button class="md-raised md-primary" ng-click="getEclEerom(item)">Чтение из
+                                            EEPROM
+                                        </md-button>
+                                        <!--<md-button class="md-raised md-primary" ng-click="getEclEerom(item)">Чтение из EEPROM</md-button>-->
                                     </md-input-container>
-                                </div>
-                                <md-divider md-inset ng-if="!$last"></md-divider>
-                            </md-list-item>
-                            <md-list-item class="md-3-line row">
-                                <img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"
-                                     alt="icon">
-                                <div class="md-list-item-text">
-                                    <h2>Ночная температурная уставка</h2>
+                                    <md-progress-circular md-mode="indeterminate" class="md-accent"
+                                                          ng-if="item.isLoading"></md-progress-circular>
+                                    <span ng-if="item.value != undefined" style="margin-right: 20px;">Значение: </span>
+                                    <md-input-container style="padding-top: 10px;" ng-if="item.value != undefined">
+                                        <input flex type="number" ng-model="item.value" aria-label="val">
 
-                                    <md-input-container class="md-block">
-                                        <input ng-model="sauterNightTemp[0]"/>
-                                        <md-button class="md-raised" ng-click="setSauterNightTemp()">Установить</md-button>
                                     </md-input-container>
+
+                                    <md-button class="md-raised" ng-click="setEclVal(item)"
+                                               style="" ng-if="item.value != undefined">
+                                        Установить
+                                    </md-button>
+
+                                    <md-slider-container ng-if="item.value != undefined">
+                                        <md-slider flex min="{{item.min}}" max="{{item.max}}" ng-model="item.value"
+                                                   aria-label="val">
+                                        </md-slider>
+
+                                    </md-slider-container>
+
+
+
+
                                 </div>
                                 <md-divider md-inset ng-if="!$last"></md-divider>
                             </md-list-item>
-                            <md-list-item class="md-3-line row">
-                                <img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"
-                                     alt="icon">
-                                <div class="md-list-item-text">
-                                    <h2>Насос</h2>
-                                    <md-input-container class="md-block">
-                                        <md-switch class="md-primary" name="special" ng-model="sauterCoilVal"
-                                                   required>
-                                            Включить
-                                        </md-switch>
-                                    </md-input-container>
-                                    <md-button class="md-raised" ng-click="setSauterCoil()">Установить</md-button>
-                                </div>
-                                <md-divider md-inset ng-if="!$last"></md-divider>
-                            </md-list-item>
-
-
-                            <md-list-item class="md-3-line row">
-                                <img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"
-                                     alt="icon">
-                                <div class="md-list-item-text">
-                                    <h2>Трёхпозиционный клапан</h2>
-                                    <md-radio-group ng-model="controlVal">
-                                        <md-radio-button value="0" class="md-primary">0%</md-radio-button>
-                                        <md-radio-button value="42" class="md-primary">42%</md-radio-button>
-                                        <md-radio-button value="100" class="md-primary">100%</md-radio-button>
-                                    </md-radio-group>
-                                    <md-button class="md-raised" ng-click="setSauterControlVal()">Установить</md-button>
-                                </div>
-                                <md-divider md-inset ng-if="!$last"></md-divider>
-                            </md-list-item>
-
-
                         </md-list>
-
 
                     </md-content>
                 </md-tab>
+                <!--<md-tab label="КАРАТ-307">-->
+                <!--<md-content class="md-padding">-->
+                <!--<h1 class="md-display-2">КАРАТ-307</h1>-->
+                <!--<div layout="row" layout-sm="column" layout-align="space-around">-->
+                <!--<md-progress-circular md-mode="indeterminate" class="md-accent"-->
+                <!--ng-if="karatDataLoading"></md-progress-circular>-->
+                <!--</div>-->
+                <!--<h3>{{KaratError}}</h3>-->
+                <!--<md-list ng-repeat="(key, value) in karatData">-->
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h3>{{key}}</h3>-->
+                <!--<h4>{{value}}</h4>-->
+                <!--</div>-->
+                <!--<md-divider md-inset ng-if="!$last"></md-divider>-->
+                <!--</md-list-item>-->
+                <!--</md-list>-->
+
+                <!--</md-content>-->
+                <!--</md-tab>-->
+                <!--<md-tab label="SAUTER EQJV125">-->
+                <!--<md-content class="md-padding">-->
+                <!--<h1 class="md-display-2">SAUTER EQJV125</h1>-->
+
+                <!--<md-list>-->
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Дневная температурная уставка (Day setpoint)</h2>-->
+                <!--<md-input-container class="md-block">-->
+                <!--<input ng-model="sauterDayTemp"-->
+                <!--aria-label="qq"-->
+                <!--/>-->
+                <!--</md-input-container>-->
+                <!--<div layout="row" layout-sm="column" layout-align="end">-->
+                <!--<md-progress-circular md-mode="indeterminate" class="md-accent"-->
+                <!--ng-if="sauterDayloading"></md-progress-circular>-->
+                <!--<md-button class="md-raised" ng-click="setSauterDayTemp()"-->
+                <!--style="" ng-if="!sauterDayloading" ng-disabled="sauterDayDisabled">-->
+                <!--Установить-->
+                <!--</md-button>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Ночная температурная уставка (Night setpoint)</h2>-->
+
+                <!--<md-input-container class="md-block">-->
+
+
+                <!--<input ng-model="sauterNightTemp"-->
+                <!--aria-label="qq"-->
+                <!--ng-disabled="sauterNightDisabled"/>-->
+                <!--</md-input-container>-->
+                <!--<div layout="row" layout-sm="column" layout-align="end">-->
+                <!--<md-progress-circular md-mode="indeterminate" class="md-accent"-->
+                <!--ng-if="sauterNightLoading"></md-progress-circular>-->
+                <!--<md-button class="md-raised" ng-click="setSauterNightTemp()"-->
+                <!--ng-if="!sauterNightLoading" ng-disabled="sauterNightDisabled">-->
+                <!--Установить-->
+                <!--</md-button>-->
+                <!--</div>-->
+
+                <!--</div>-->
+                <!--</md-list-item>-->
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Насос (bit Terminal 6)</h2>-->
+                <!--<md-radio-group ng-model="sauterCoilVal">-->
+                <!--<md-radio-button ng-value="1" class="md-primary"> Включен-->
+                <!--</md-radio-button>-->
+                <!--<md-radio-button ng-value="0" class="md-primary">Выключен-->
+                <!--</md-radio-button>-->
+                <!--</md-radio-group>-->
+                <!--<div layout="row" layout-sm="column" layout-align="end">-->
+                <!--<md-progress-circular md-mode="indeterminate" class="md-accent"-->
+                <!--ng-if="sauterCoilLoading"></md-progress-circular>-->
+                <!--<md-button class="md-raised" ng-click="setSauterCoil()"-->
+                <!--ng-if="!sauterCoilLoading" ng-disabled="coilDisabled">-->
+                <!--Установить-->
+                <!--</md-button>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Трёхпозиционный клапан (Control Signal RK1)</h2>-->
+
+
+                <!--<md-radio-group ng-model="controlVal">-->
+                <!--<md-radio-button ng-value="0"-->
+                <!--class="md-primary">0%-->
+                <!--</md-radio-button>-->
+                <!--<md-radio-button ng-value="30"-->
+                <!--class="md-primary">30%-->
+                <!--</md-radio-button>-->
+                <!--<md-radio-button ng-value="100"-->
+                <!--class="md-primary">100%-->
+                <!--</md-radio-button>-->
+                <!--</md-radio-group>-->
+                <!--<div layout="row" layout-sm="column" layout-align="end">-->
+                <!--<md-progress-circular md-mode="indeterminate" class="md-accent"-->
+                <!--ng-if="sauterControlLoading"></md-progress-circular>-->
+                <!--<md-button ng-if="!sauterControlLoading" class="md-raised"-->
+                <!--ng-click="setSauterControlVal()">Установить-->
+                <!--</md-button>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--</md-list>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>AT Heat Off RK1</h2>-->
+                <!--<span>{{ATHeatOffRK1}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Модем циклической инициализации (Cyclical init Modem)</h2>-->
+                <!--<span>{{CyclicalinitModem}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Дата (Date)</h2>-->
+                <!--<span>{{Date}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Статус устройства (Device Status)</h2>-->
+                <!--<span>{{DeviceStatus}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Архивное значение статуса устройства (Device Status Archive)</h2>-->
+                <!--<span>{{DeviceStatusArchive}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Пауза опроса модемом (Dial Pause Modem)</h2>-->
+                <!--<span>{{DialPauseModem}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Ожидание повтора опроса модемом (Dial Repeat Modem)</h2>-->
+                <!--<span>{{DialRepeatModem}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg" class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Число ошибок (Error counter)</h2>-->
+                <!--<span>{{Errorcounter}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Версия прошивки (Firmware version)</h2>-->
+                <!--<span>{{Firmwareversion}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Уставка потока (Flow setpoint)</h2>-->
+                <!--<span>{{Flowsetpoint}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Температура потока VF1 (Flow temp VF1)</h2>-->
+                <!--<span>{{FlowtempVF1}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Версия программного обеспечения (Hardware version)</h2>-->
+                <!--<span>{{Hardwareversion}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item-->
+                <!--class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Максимальная температура подачи (Max flow temp)</h2>-->
+                <!--<span>{{Maxflowtemp}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item-->
+                <!--class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Минимальная температура подачи (Min flow temp)</h2>-->
+                <!--<span>{{Minflowtemp}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item-->
+                <!--class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Режим RK1 (Mode RK1)</h2>-->
+                <!--<span>{{ModeRK1}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Температура наружного воздуха (Outdoor temp AF1)</h2>-->
+                <!--<span>{{OutdoortempAF1}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Номер продукта (Product number)</h2>-->
+                <!--<span>{{Productnumber}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Пропорциональный диапазон (Proportional band)</h2>-->
+                <!--<span>{{Proportionalband}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Сброс времени (Reset time)</h2>-->
+                <!--<span>{{Resettime}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Комнатная температура (Room temp RF1)</h2>-->
+                <!--<span>{{RoomtempRF1}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Время работы привода (Run-time for actuator)</h2>-->
+                <!--<span>{{Runtimeforactuator}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Наклон кривой отопления (Slope of heating)</h2>-->
+                <!--<span>{{Slopeofheating}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Положение переключателя (Switch position)</h2>-->
+                <!--<span>{{Switchposition}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Время (Time)</h2>-->
+                <!--<span>{{Time}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Тайм-аут модема (Time-out Modem)</h2>-->
+                <!--<span>{{TimeoutModem}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Включена ли запись модемом (Write-enableModem)</h2>-->
+                <!--<span>{{WriteenableModem}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item-->
+                <!--class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Год (Year)</h2>-->
+                <!--<span>{{Year}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>? (bitCollective)</h2>-->
+                <!--<span>{{bitCollective}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Элемент управления (bit Control element)</h2>-->
+                <!--<span>{{bitControlelement}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Повторный опрос, если ошибка (bit Dial if error)</h2>-->
+                <!--<span>{{bitDialiferror}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Отключить модем (bit Disable modem)</h2>-->
+                <!--<span>{{bitDisablemodem}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Средний насос отопления (bit Heating medium pump)</h2>-->
+                <!--<span>{{bitHeatingmediumpump}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Ручной режим (bit Manual mode)</h2>-->
+                <!--<span>{{bitManualmode}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Режим работы (bit Operating mode)</h2>-->
+                <!--<span>{{bitOperatingmode}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Значение уставки (bit Setpoint value Tf)</h2>-->
+                <!--<span>{{bitSetpointvalueTf}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Таймаут (bit Time-out)</h2>-->
+                <!--<span>{{bitTimeout}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--<md-list-item class="md-3-line row">-->
+                <!--<img ng-src="resources/img/icons/ic_extension_black_24px.svg"-->
+                <!--class="md-avatar"-->
+                <!--alt="icon">-->
+                <!--<div class="md-list-item-text">-->
+                <!--<h2>Система (system)</h2>-->
+                <!--<span>{{system}}</span>-->
+                <!--</div>-->
+                <!--</md-list-item>-->
+
+
+                <!--</md-list>-->
+
+
+                <!--</md-content>-->
+                <!--</md-tab>-->
             </md-tabs>
         </md-content>
     </div>

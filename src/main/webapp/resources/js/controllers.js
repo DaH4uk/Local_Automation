@@ -78,11 +78,131 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             console.log($scope.sauterCoilVal);
         });
 
+            if (data.Daysetpoint) {
+                $scope.sauterDayTemp = data.Daysetpoint;
+                $scope.sauterDayloading = false;
+            }
+
+            if (data.Nightsetpoint) {
+                $scope.sauterNightTemp = data.Nightsetpoint;
+                $scope.sauterNightLoading = false;
+            }
+            if (data.bitTerminal6) {
+                if (data.bitTerminal6 === "true") {
+                    $scope.sauterCoilVal = 1;
+                } else {
+                    $scope.sauterCoilVal = 0;
+                }
+                $scope.sauterCoilLoading = false;
+            }
+            if (data.ControlSignalRK1) {
+                $scope.controlVal = data.ControlSignalRK1;
+                $scope.sauterControlLoading = false;
+            }
+
+
+            $scope.ATHeatOffRK1 = data.ATHeatOffRK1;
+            $scope.ControlSignalRK1 = data.ControlSignalRK1;
+            $scope.CyclicalinitModem = data.CyclicalinitModem;
+            $scope.Date = data.Date;
+            $scope.DeviceStatus = data.DeviceStatus;
+            $scope.DeviceStatusArchive = data.DeviceStatusArchive;
+            $scope.DialPauseModem = data.DialPauseModem;
+            $scope.DialRepeatModem = data.DialRepeatModem;
+            $scope.Errorcounter = data.Errorcounter;
+            $scope.Firmwareversion = data.Firmwareversion;
+            $scope.Flowsetpoint = data.Flowsetpoint;
+            $scope.Hardwareversion = data.Hardwareversion;
+            $scope.FlowtempVF1 = data.FlowtempVF1;
+            $scope.Maxflowtemp = data.Maxflowtemp;
+            $scope.Minflowtemp = data.Minflowtemp;
+            $scope.ModeRK1 = data.ModeRK1;
+            $scope.OutdoortempAF1 = data.OutdoortempAF1;
+            $scope.Productnumber = data.Productnumber;
+            $scope.Proportionalband = data.Proportionalband;
+            $scope.Resettime = data.Resettime;
+            $scope.RoomtempRF1 = data.RoomtempRF1;
+            $scope.Runtimeforactuator = data.Runtimeforactuator;
+            $scope.Slopeofheating = data.Slopeofheating;
+            $scope.Switchposition = data.Switchposition;
+            $scope.Time = data.Time;
+            $scope.TimeoutModem = data.TimeoutModem;
+            $scope.WriteenableModem = data.WriteenableModem;
+            $scope.Year = data.Year;
+            $scope.bitCollective = data.bitCollective;
+            $scope.bitControlelement = data.bitControlelement;
+            $scope.bitDialiferror = data.bitDialiferror;
+            $scope.bitDisablemodem = data.bitDisablemodem;
+            $scope.bitHeatingmediumpump = data.bitHeatingmediumpump;
+            $scope.bitManualmode = data.bitManualmode;
+            $scope.bitOperatingmode = data.bitOperatingmode;
+            $scope.bitSetpointvalueTf = data.bitSetpointvalueTf;
+            $scope.bitTimeout = data.bitTimeout;
+            $scope.system = data.system;
+
+            if (data.register) {
+                if (data.register === "1") {
+                    $scope.readMode1 = data.value;
+                    $scope.isLoadingreadMode1 = false;
+
+                } else if (data.register === "2") {
+                    $scope.readMode2 = data.value;
+                    $scope.isLoadingreadMode2 = false;
+
+                } else if (data.register === "3") {
+                    $scope.readMode3 = data.value;
+                    $scope.isLoadingreadMode3 = false;
+
+                }
+                if (!data.value || data.value === "true") {
+                    if (data.value !== "true")
+                        showToast(data.error, 3);
+                    $scope.eclReadItems.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                        }
+                    });
+                    $scope.eclWriteRegisters.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                        }
+                    })
+                } else {
+                    $scope.eclReadItems.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                            item.value = data.value;
+                        }
+                    });
+                    $scope.eclWriteRegisters.forEach(function (item) {
+                        if (item.path === data.register) {
+                            item.isLoading = false;
+                            item.value = data.value;
+                        }
+                    })
+                }
+            }
+
+            if (data.app_type) {
+                $scope.appType = data.app_type;
+                $scope.isAppTypeLoading = false;
+            }
+        };
+
+
         $scope.setSauterDayTemp = function () {
-            DataService.setSauterDayVal($scope.sauterDayTemp[0]);
+            $scope.sauterDayloading = true;
+            ngstomp.send("/app/set", {
+                element: "day_setpoint_rk1",
+                value: $scope.sauterDayTemp
+            });
         };
         $scope.setSauterNightTemp = function () {
-            DataService.setSauterNightVal($scope.sauterNightTemp[0]);
+            $scope.sauterNightLoading = true;
+            ngstomp.send("/app/set", {
+                element: "night_setpoint_rk1",
+                value: $scope.sauterNightTemp
+            });
         };
         $scope.setSauterCoil = function () {
             var coilValue;
@@ -99,12 +219,134 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
         };
 
 
+        $scope.eclReadItems = [
+            {
+                name: "Sensor 1",
+                path: "sensor_1",
+                isLoading: false
+            }, {
+                name: "Sensor 2",
+                path: "sensor_2",
+                isLoading: false
+            }, {
+                name: "Sensor 3",
+                path: "sensor_3",
+                isLoading: false
+            }, {
+                name: "Sensor 4",
+                path: "sensor_4",
+                isLoading: false
+            }, {
+                name: "Sensor 5",
+                path: "sensor_5",
+                isLoading: false
+            }, {
+                name: "Sensor 6",
+                path: "sensor_6",
+                isLoading: false
+            }, {
+                name: "Room temperature circuit 1",
+                path: "room_temp_c1",
+                isLoading: false
+            }, {
+                name: "Room temperature circuit 2",
+                path: "room_temp_c2",
+                isLoading: false
+            }, {
+                name: "Calculated return temperature Circuit 1",
+                path: "calc_ret_temp_c1",
+                isLoading: false
+            }, {
+                name: "Calculated return temperature Circuit 2",
+                path: "calc_ret_temp_c2",
+                isLoading: false
+            }, {
+                name: "Calculated flow temperature Circuit 1",
+                path: "calc_flow_temp_c1",
+                isLoading: false
+            }, {
+                name: "Calculated flow temperature Circuit 2",
+                path: "calc_flow_temp_c2",
+                isLoading: false
+            }, {
+                name: "Outdoor temperature",
+                path: "outdoor_temp",
+                isLoading: false
+            }
+        ];
 
+        $scope.eclWriteRegisters = [{
+            name: "Параллельное смещение",
+            path: "parallel_displacement_c1",
+            isLoading: false,
+            min: -9,
+            max: 9
+        }, {
+            name: "Минимальная температура потока",
+            path: "flow_temp_min_c1",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }, {
+            name: "Максимальная температура потока",
+            path: "flow_temp_max_c1",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }, {
+            name: "Дневная температура горячей воды",
+            path: "hw_temp_day_sp",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }, {
+            name: "Ночная температура горячей воды",
+            path: "hw_temp_night_sp",
+            isLoading: false,
+            min: 10,
+            max: 110
+        }];
 
-        //
-        // console.log($scope.sauterCoilVal);
+        $scope.getEclRam = function (item) {
+            var path = item.path;
+            item.isLoading = true;
+            ngstomp
+                .send('/app/ECL300', "read_ram " + path);
+        };
+        $scope.getEclEerom = function (item) {
+            var path = item.path;
+            item.isLoading = true;
+            ngstomp
+                .send('/app/ECL300', "read_eeprom " + path);
+        };
 
+        $scope.getEclReadMode = function (val) {
+            if (val === 1) {
+                $scope.isLoadingreadMode1 = true;
+            }
+            if (val === 2) {
+                $scope.isLoadingreadMode2 = true;
+            }
+            if (val === 3) {
+                $scope.isLoadingreadMode3 = true;
+            }
 
+            ngstomp
+                .send('/app/ECL300', "read_mode " + val);
+        };
+
+        $scope.getEclAppType = function () {
+            $scope.isAppTypeLoading = true;
+            ngstomp
+                .send('/app/ECL300', "read_app_type");
+        };
+
+        $scope.setEclVal = function (item) {
+            item.isLoading = true;
+            ngstomp.send("/app/ECL300", "write " + item.path + " " + item.value);
+
+            console.log(item);
+        }
     })
     .controller('ImgUplDlgCtrl', function ($scope, $http, $mdDialog) {
         $scope.showProgress = false;
@@ -263,12 +505,15 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
     })
     .controller('GridBottomSheetCtrl', function ($scope, $mdBottomSheet, $rootScope) {
         $scope.items = [
-            {name: "Кран", icon: "valve", category: "Valve", width: "24"},
-            {name: "Расходомер", icon: "flowmeter", category: "Flowmeter", width: "24"},
-            {name: "Прибор учета 1", icon: "meteringDevice-1", category: "MeteringDevice1", width: "44"},
-            {name: "Прибор учета 2", icon: "meteringDevice-2", category: "MeteringDevice2", width: "44"},
-            {name: "Насос", icon: "pump", category: "Pump", width: "24"},
-            {name: "Контроллер", icon: "controller", category: "Controller", width: "44"}
+            // {name: "Кран", icon: "valve.svg", category: "Valve", width: "24"},
+            // {name: "Расходомер", icon: "flowmeter.svg", category: "Flowmeter", width: "24"},
+            // {name: "Прибор учета 1", icon: "meteringDevice-1.svg", category: "MeteringDevice1", width: "44"},
+            // {name: "Прибор учета 2", icon: "meteringDevice-2.svg", category: "MeteringDevice2", width: "44"},
+            {name: "Насос", icon: "pump.svg", category: "Pump", width: "24"},
+            // {name: "Контроллер", icon: "controller.svg", category: "Controller", width: "44"},
+            {name: "Дневная тепература", icon: "tempCtrl.png", category: "dayTemp", width: "24"},
+            {name: "Ночная тепература", icon: "tempCtrl.png", category: "nightTemp", width: "24"},
+            {name: "Трехпозиционный клапан", icon: "threeWayValve.svg", category: "threeWayValve", width: "24"}
         ];
 
         $scope.listItemClick = function ($index) {
@@ -509,14 +754,175 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                         editable: true,
                         alignment: new go.Spot(0.5, 1.3)
                     },
+                    new go.Binding("text").makeTwoWay()
+                )));
+
+        myDiagram.nodeTemplateMap.add("threeWayValve",
+            $(go.Node, go.Panel.Spot,
+                {
+                    locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+                    selectionObjectName: "SHAPE", rotatable: true
+                },
+                new go.Binding("angle").makeTwoWay(),
+                new go.Binding("layerName", "layer"),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(50, 50),
+                    source: "/resources/img/icons/scheme/threeWayValve.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
                     new go.Binding("text").makeTwoWay(),
                     // keep the text upright, even when the whole node has been rotated upside down
                     new go.Binding("angle", "angle", function (a) {
                         return a === 180 ? 180 : 0;
-                    }).ofObject()),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true)
-            ));
+                    }).ofObject()
+                )));
+
+
+        myDiagram.nodeTemplateMap.add("dayTemp",
+            $(go.Node, go.Panel.Position,
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                new go.Binding("layerName", "layer"),
+                $(go.Shape, "Rectangle",
+                    {
+                        name: "TABLESHAPE",
+                        position: new go.Point(0, 0),
+                        desiredSize: new go.Size(200, 100),
+                        fill: "#ffbe00", stroke: null
+                    }),
+                $(go.TextBlock, {
+                    editable: true,
+                    font: "bold 11pt Verdana, sans-serif",
+                    position: new go.Point(0, 0),
+                    text: "Дневная температура"
+                }),
+                $(go.Panel, "Auto",
+                    {
+                        column: 1,
+                        position: new go.Point(20, 30)
+                    },
+                    $(go.Shape, {fill: "#F2F2F2"}),
+                    $(go.TextBlock,
+                        {
+                            font: "10pt Verdana, sans-serif",
+                            textAlign: "right", margin: 2,
+                            width: 50,
+                            isMultiline: false,
+                            text: "-",
+                            textValidation: isValidCount
+                        },
+                        new go.Binding("text").makeTwoWay(function (count) {
+                            return parseInt(count, 10);
+                        })
+                    )
+                ),
+                $(go.Panel, "Horizontal",
+                    {
+                        column: 2,
+                        position: new go.Point(80, 30)
+                    },
+                    $("Button",
+                        {
+                            click: incrementCount
+                        },
+                        $(go.Shape, "PlusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
+                    ),
+                    $("Button",
+                        {
+                            click: decrementCount
+                        },
+                        $(go.Shape, "MinusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
+                    )
+                )));
+
+        myDiagram.nodeTemplateMap.add("nightTemp",
+            $(go.Node, go.Panel.Position,
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                new go.Binding("layerName", "layer"),
+                $(go.Shape, "Rectangle",
+                    {
+                        name: "TABLESHAPE",
+                        position: new go.Point(0, 0),
+                        desiredSize: new go.Size(200, 100),
+                        fill: "#008dff", stroke: null
+                    }),
+                $(go.TextBlock, {
+                    editable: true,
+                    font: "bold 11pt Verdana, sans-serif",
+                    position: new go.Point(0, 0),
+                    text: "Ночная температура"
+                }),
+                $(go.Panel, "Auto",
+                    {
+                        column: 1,
+                        position: new go.Point(20, 30)
+                    },
+                    $(go.Shape, {fill: "#F2F2F2"}),
+                    $(go.TextBlock,
+                        {
+                            font: "10pt Verdana, sans-serif",
+                            textAlign: "right", margin: 2,
+                            width: 50,
+                            isMultiline: false,
+                            text: "-",
+                            textValidation: isValidCount
+                        },
+                        new go.Binding("text").makeTwoWay(function (count) {
+                            return parseInt(count, 10);
+                        })
+                    )
+                ),
+                $(go.Panel, "Horizontal",
+                    {
+                        column: 2,
+                        position: new go.Point(80, 30)
+                    },
+                    $("Button",
+                        {
+                            click: incrementCount
+                        },
+                        $(go.Shape, "PlusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
+                    ),
+                    $("Button",
+                        {
+                            click: decrementCount
+                        },
+                        $(go.Shape, "MinusLine", {margin: 3, desiredSize: new go.Size(7, 7)})
+                    )
+                )));
+
+        // Validation function for editing text
+        function isValidCount(textblock, oldstr, newstr) {
+            if (newstr === "") return false;
+            var num = +newstr; // quick way to convert a string to a number
+            return !isNaN(num) && Number.isInteger(num) && num >= 0;
+        }
+
+        // When user hits + button, increment count on that option
+        function incrementCount(e, obj) {
+            myDiagram.model.startTransaction("increment count");
+            var slicedata = obj.panel.panel.data;
+            myDiagram.model.setDataProperty(slicedata, "text", slicedata.count + 1);
+            myDiagram.model.commitTransaction("increment count");
+        }
+
+        // When user hits - button, decrement count on that option
+        function decrementCount(e, obj) {
+            myDiagram.model.startTransaction("decrement count");
+            var slicedata = obj.panel.panel.data;
+            if (slicedata.count > 0)
+                myDiagram.model.setDataProperty(slicedata, "text", slicedata.count - 1);
+            myDiagram.model.commitTransaction("decrement count");
+        }
+
         myDiagram.nodeTemplateMap.add("Controller",
             $(go.Node, go.Panel.Spot, nodeStyle(),
                 new go.Binding("angle").makeTwoWay(),
@@ -609,6 +1015,26 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             }
         }
 
+                for (var i = 0; i < $scope.links.length; i++) {
+                    var obj = $scope.links[i];
+                    if (obj.color == null) {
+                        delete(obj.color);
+                    }
+                }
+                $scope.nodes.forEach(function (val) {
+                    if (val.category !== "image") {
+                        val.layer = "Foreground";
+                    }
+                });
+                myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+                myDiagram.model.nodeDataArray.forEach(function (val) {
+                    if (val.category === "image") {
+                        $scope.isImage = true;
+                    }
+                });
+                if (!$scope.isImage) {
+                    myDiagram.model.addNodeData({category: "image", key: 99, layer: "Background"});
+                }
 
         myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
         // animate some flow through the pipes
@@ -740,9 +1166,38 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             )
         );
 
-        myDiagram.nodeTemplateMap.add("MeteringDevice1",
-            $(go.Node, go.Panel.Spot, nodeStyle(),
+
+        myDiagram.nodeTemplateMap.add("threeWayValve",
+            $(go.Node, go.Panel.Spot,
+                {
+                    locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+                    selectionObjectName: "SHAPE", rotatable: true
+                },
                 new go.Binding("angle").makeTwoWay(),
+                new go.Binding("layerName", "layer"),
+                new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+                $(go.Picture, {
+                    desiredSize: new go.Size(50, 50),
+                    source: "/resources/img/icons/scheme/threeWayValve.svg",
+                    alignment: new go.Spot(0.5, 0.5),
+                    fromSpot: go.Spot.Right,  // port properties go on the port!
+                    toSpot: go.Spot.Left
+                }),
+                $(go.TextBlock, {
+                        textAlign: "center",
+                        margin: 5,
+                        editable: true,
+                        alignment: new go.Spot(0.5, 1.3)
+                    },
+                    new go.Binding("text").makeTwoWay(),
+                    // keep the text upright, even when the whole node has been rotated upside down
+                    new go.Binding("angle", "angle", function (a) {
+                        return a === 180 ? 180 : 0;
+                    }).ofObject()
+                )));
+
+        myDiagram.nodeTemplateMap.add("dayTemp",
+            $(go.Node, go.Panel.Position,
                 new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
                 $(go.Picture, {
                     desiredSize: new go.Size(60, 30),
@@ -880,10 +1335,76 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     strokeDashArray: [20, 40]
                 })
             );
-        for (var i = 0; i < $scope.nodes.length; i++) {
-            var obj = $scope.nodes[i];
-            if (obj.category == null) {
-                delete(obj.category);
+
+        SchemeService.getLinks().$promise.then(function (links) {
+            $scope.links = links;
+            SchemeService.getNodes(schemeId).$promise.then(function (nodes) {
+                $scope.nodes = nodes;
+
+                $scope.nodes.forEach(function (val) {
+                    if (val.links === null) {
+                        delete(val.color);
+                    }
+                });
+
+                $scope.links.forEach(function (obj) {
+                    if (obj.category === null) {
+                        delete(obj.category);
+                    }
+                    if (obj.angle === null) {
+                        delete (obj.angle);
+                    }
+                    if (obj.pos === null) {
+                        delete (obj.pos);
+                    }
+                    if (obj.text === null) {
+                        delete (obj.text);
+                    }
+                });
+
+                myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
+
+                ngstomp
+                    .subscribeTo('/data/updater')
+                    .callback(whatToDoWhenMessageComming)
+                    .withBodyInJson()
+                    .connect();
+
+                ngstomp.send("/app/hello", "hello");
+
+            });
+        });
+
+
+        var showToast = function (msg, delay) {
+            var pinTo = $scope.getToastPosition();
+
+            $mdToast.show(
+                $mdToast.simple()
+                    .textContent(msg)
+                    .position(pinTo)
+                    .hideDelay(delay * 1000)
+            );
+            $scope.toastShowed = true;
+        };
+
+
+        var changeVal = function (category, value) {
+            myDiagram.model.nodeDataArray.forEach(function (val) {
+                if (val.category === category) {
+                    val.text = value;
+                    myDiagram.model.updateTargetBindings(val);
+                }
+            });
+        };
+
+        var changeSauterCoilVal = function (val) {
+            if (val === "true") {
+                changePumpColor("#15dd00");
+                $scope.sauterCoilVal = 1;
+            } else {
+                changePumpColor("#dd0006");
+                $scope.sauterCoilVal = 0;
             }
             if (obj.angle == null) {
                 delete (obj.angle);
@@ -895,12 +1416,25 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             if (obj.color == null) {
                 delete(obj.color);
             }
-        }
-
-
-        myDiagram.model = new go.GraphLinksModel($scope.nodes, $scope.links);
-        // animate some flow through the pipes
-        loop(); // animate some flow through the pipes
+        };
+        var parseData = function (data) {
+            if (data.Daysetpoint) {
+                changeVal("dayTemp", data.Daysetpoint);
+                hideToast("Значение дневной уставки установлено")
+            }
+            if (data.Nightsetpoint) {
+                changeVal("nightTemp", data.Nightsetpoint);
+                hideToast("Значение ночной уставки установлено")
+            }
+            if (data.bitTerminal6) {
+                changeSauterCoilVal(data.bitTerminal6);
+                hideToast("Положение насоса установлено")
+            }
+            if (data.ControlSignalRK1) {
+                changeVal("threeWayValve", data.ControlSignalRK1);
+                hideToast("Положение трехпозиционного клапана установлено");
+            }
+        };
 
         function loop() {
             var diagram = myDiagram;
@@ -931,7 +1465,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
     })
     .controller('TokensController', function ($scope, UsersService, TokensService, $q) {
 
-        var browsers = ["Firefox", 'Chrome', 'Trident']
+        var browsers = ["Firefox", 'Chrome', 'Trident'];
 
         $q.all([
             UsersService.getAll().$promise,
