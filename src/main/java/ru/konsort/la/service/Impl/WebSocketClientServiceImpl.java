@@ -46,49 +46,41 @@ public class WebSocketClientServiceImpl implements WebSocketClientService {
     private Environment environment;
 
 
-    private final CountDownLatch closeLatch;
     @SuppressWarnings("unused")
     private Session session;
 
-    private String register;
+    boolean proxyStatus;
 
-
-    public WebSocketClientServiceImpl() {
-        this.closeLatch = new CountDownLatch(1);
-    }
-
-    public boolean awaitClose(int duration, TimeUnit unit) throws InterruptedException {
-        return this.closeLatch.await(duration, unit);
-    }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) throws Exception {
         System.err.printf("Connection closed: %d - %s%n", statusCode, reason);
         this.session = null;
-        this.closeLatch.countDown(); // trigger latch
-
+        proxyStatus = false;
+        checkProxyConnected();
         Thread.sleep(10000);
         Connect();
     }
 
     @OnWebSocketConnect
-    public void onConnect(Session session) {
+    public void onConnect(Session session) throws IOException {
         System.err.printf("Got connect: %s%n", session);
         this.session = session;
+        proxyStatus = true;
+        checkProxyConnected();
     }
 
     @OnWebSocketMessage
     public void onMessage(String msg) {
         System.err.printf("Got msg: %s%n", msg);
         JsonObject jsonObject = null;
-        if (!msg.contains("{") && !msg.contains("}")){
-            if (msg.contains("Error")){
+        if (!msg.contains("{") && !msg.contains("}")) {
+            if (msg.contains("Error")) {
                 msg = "{\"error\":  \"" + msg + "\"}";
             } else {
                 msg = "{\"value\":  \"" + msg + "\"}";
             }
         }
-
 
 
         jsonObject = (JsonObject) jsonParser.parse(msg);
@@ -97,7 +89,6 @@ public class WebSocketClientServiceImpl implements WebSocketClientService {
             jsonObject = (JsonObject) jsonParser.parse(msg);
             parseAndSaveData("Error", jsonObject);
         }
-
 
 
         if (jsonObject != null && jsonObject.get("Value") != null) {
@@ -150,12 +141,7 @@ public class WebSocketClientServiceImpl implements WebSocketClientService {
 
         } else {
             String queue = "/data/updater";
-            if ("app_type".equals(register)){
-                msg = msg.replace("value", "app_type");
 
-            } else {
-                msg = msg.substring(0,msg.length()-1) + ", \"register\": \"" +register + "\"}";
-            }
             this.messagingTemplate.convertAndSend(queue, msg);
         }
 
@@ -165,7 +151,7 @@ public class WebSocketClientServiceImpl implements WebSocketClientService {
         JsonElement val = jsonObject.get(registerName);
         registerName = registerName.replace(" ", "");
         registerName = registerName.replace("-", "");
-        if (val != null && !val.isJsonNull()){
+        if (val != null && !val.isJsonNull()) {
             controllerDataRepo.save(registerName, val.getAsString());
         }
     }
@@ -173,26 +159,18 @@ public class WebSocketClientServiceImpl implements WebSocketClientService {
     public void sendMessage(String msg) throws Exception {
         msg = msg.replace("\"", "");
 
-        try {
-            session.getRemote().sendString(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (session == null) {
             Connect();
-            session.getRemote().sendString(msg);
+            Thread.sleep(10000);
+        }
 
-        }
-        String[] split = msg.split(" ");
-        if (split.length > 1){
-            register = msg.split(" ")[1];
-        } else {
-            register = "app_type";
-        }
+        session.getRemote().sendString(msg);
     }
 
     @PostConstruct
     @Override
     public void Connect() throws Exception {
-        WebSocketClient client = new WebSocketClient();
+        this.client = new WebSocketClient();
         client.start();
 
         URI echoUri = new URI(environment.getProperty("driver.ws"));
@@ -210,5 +188,12 @@ public class WebSocketClientServiceImpl implements WebSocketClientService {
     public void sendToClients() {
         String queue = "/data/updater";
         this.messagingTemplate.convertAndSend(queue, controllerDataRepo.findAll());
+    }
+
+    public void checkProxyConnected() {
+        String queue = "/data/updater";
+        String response = "{\"proxyStatus\": " + proxyStatus + "}";
+        System.err.println(response);
+        this.messagingTemplate.convertAndSend(queue, response);
     }
 }

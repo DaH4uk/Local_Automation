@@ -80,8 +80,13 @@ public class WebSocketController {
     @MessageMapping("/ECL300")
     @SendTo("/data/updater")
     public void onEclMessage(String msg) throws Exception {
+        if ("status".equals(msg.replace("\"", ""))){
+            webSocketClientService.checkProxyConnected();
+        }
         webSocketClientService.sendMessage(msg);
     }
+
+
 
 
 }

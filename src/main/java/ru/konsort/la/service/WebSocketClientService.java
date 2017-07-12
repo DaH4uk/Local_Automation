@@ -14,4 +14,5 @@ public interface WebSocketClientService {
 
     void sendMessage(String msg) throws Exception;
 
+    void checkProxyConnected();
     }

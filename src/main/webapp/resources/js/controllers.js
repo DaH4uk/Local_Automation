@@ -2,27 +2,107 @@
 
 
 var eclReadItems = [
-    { name: "Sensor 1", icon: "ex", category: "sens", width: "24", path: "sensor_1", isLoading: false },
-    { name: "Sensor 2", icon: "ex", category: "sens2", width: "24", path: "sensor_2", isLoading: false },
-    { name: "Sensor 3", icon: "ex", category: "sens3", width: "24", path: "sensor_3", isLoading: false },
-    { name: "Sensor 4", icon: "ex", category: "sens4", width: "24", path: "sensor_4", isLoading: false },
-    { name: "Sensor 5", icon: "ex", category: "sens5", width: "24", path: "sensor_5", isLoading: false },
-    { name: "Sensor 6", icon: "ex", category: "sens6", width: "24", path: "sensor_6", isLoading: false },
-    { name: "Room temp 1", icon: "ex", category: "roomTemp1", width: "24", path: "room_temp_c1", isLoading: false },
-    { name: "Room temp 2", icon: "ex", category: "roomTemp2", width: "24", path: "room_temp_c2", isLoading: false },
-    { name: "Calc return temp 1", icon: "ex", category: "CalcReturnTemp1", width: "24", path: "calc_ret_temp_c1", isLoading: false },
-    { name: "Calc return temp 2", icon: "ex", category: "CalcReturnTemp2", width: "24", path: "calc_ret_temp_c2", isLoading: false },
-    { name: "Calc flow temp 1", icon: "ex", category: "CalcFlowTemp1", width: "24", path: "calc_flow_temp_c1", isLoading: false },
-    { name: "Calc flow temp 2", icon: "ex", category: "CalcFlowTemp2", width: "24", path: "calc_flow_temp_c2", isLoading: false },
-    { name: "Outdoor temperature", icon: "ex", category: "OutdoorTemp", width: "24", path: "outdoor_temp", isLoading: false }
+    {name: "Sensor 1", icon: "ex", category: "sens", width: "24", path: "sensor_1", isLoading: false},
+    {name: "Sensor 2", icon: "ex", category: "sens2", width: "24", path: "sensor_2", isLoading: false},
+    {name: "Sensor 3", icon: "ex", category: "sens3", width: "24", path: "sensor_3", isLoading: false},
+    {name: "Sensor 4", icon: "ex", category: "sens4", width: "24", path: "sensor_4", isLoading: false},
+    {name: "Sensor 5", icon: "ex", category: "sens5", width: "24", path: "sensor_5", isLoading: false},
+    {name: "Sensor 6", icon: "ex", category: "sens6", width: "24", path: "sensor_6", isLoading: false},
+    {name: "Room temp 1", icon: "ex", category: "roomTemp1", width: "24", path: "room_temp_c1", isLoading: false},
+    {name: "Room temp 2", icon: "ex", category: "roomTemp2", width: "24", path: "room_temp_c2", isLoading: false},
+    {
+        name: "Calc return temp 1",
+        icon: "ex",
+        category: "CalcReturnTemp1",
+        width: "24",
+        path: "calc_ret_temp_c1",
+        isLoading: false
+    },
+    {
+        name: "Calc return temp 2",
+        icon: "ex",
+        category: "CalcReturnTemp2",
+        width: "24",
+        path: "calc_ret_temp_c2",
+        isLoading: false
+    },
+    {
+        name: "Calc flow temp 1",
+        icon: "ex",
+        category: "CalcFlowTemp1",
+        width: "24",
+        path: "calc_flow_temp_c1",
+        isLoading: false
+    },
+    {
+        name: "Calc flow temp 2",
+        icon: "ex",
+        category: "CalcFlowTemp2",
+        width: "24",
+        path: "calc_flow_temp_c2",
+        isLoading: false
+    },
+    {
+        name: "Outdoor temperature",
+        icon: "ex",
+        category: "OutdoorTemp",
+        width: "24",
+        path: "outdoor_temp",
+        isLoading: false
+    }
 ];
 
 var eclWriteItems = [
-    { name: "Параллельное смещение", icon: "ex", category: "parallel_displacement_c1", width: "24", path: "parallel_displacement_c1", isLoading: false, min: -9, max: 9 },
-    { name: "Минимальная температура потока", icon: "ex", category: "flow_temp_min_c1", width: "24", path: "flow_temp_min_c1", isLoading: false, min: 10, max: 110 },
-    { name: "Максимальная температура потока", icon: "ex", category: "flow_temp_max_c1", width: "24", path: "flow_temp_max_c1", isLoading: false, min: 10, max: 110 },
-    { name: "Дневная температура горячей воды", icon: "ex", category: "hw_temp_day_sp", width: "24", path: "hw_temp_day_sp", isLoading: false, min: 10, max: 110 },
-    { name: "Ночная температура горячей воды", icon: "ex", category: "hw_temp_night_sp", width: "24", path: "hw_temp_night_sp", isLoading: false, min: 10, max: 110 }
+    {
+        name: "Параллельное смещение",
+        icon: "ex",
+        category: "parallel_displacement_c1",
+        width: "24",
+        path: "parallel_displacement_c1",
+        isLoading: false,
+        min: -9,
+        max: 9
+    },
+    {
+        name: "Минимальная температура потока",
+        icon: "ex",
+        category: "flow_temp_min_c1",
+        width: "24",
+        path: "flow_temp_min_c1",
+        isLoading: false,
+        min: 10,
+        max: 110
+    },
+    {
+        name: "Максимальная температура потока",
+        icon: "ex",
+        category: "flow_temp_max_c1",
+        width: "24",
+        path: "flow_temp_max_c1",
+        isLoading: false,
+        min: 10,
+        max: 110
+    },
+    {
+        name: "Дневная температура горячей воды",
+        icon: "ex",
+        category: "hw_temp_day_sp",
+        width: "24",
+        path: "hw_temp_day_sp",
+        isLoading: false,
+        min: 10,
+        max: 110
+    },
+    {
+        name: "Ночная температура горячей воды",
+        icon: "ex",
+        category: "hw_temp_night_sp",
+        width: "24",
+        path: "hw_temp_night_sp",
+        isLoading: false,
+        min: 10,
+        max: 110
+    }
 ];
 
 myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedService, $mdBottomSheet) {
@@ -143,6 +223,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             .connect();
 
         ngstomp.send("/app/hello", "hello");
+        ngstomp.send("/app/ECL300", "status");
 
 
         function whatToDoWhenMessageComming(message) {
@@ -157,6 +238,21 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             // } else {
             //     $scope.karatData = data.karatData;
             // }
+
+            if (data.proxyStatus !== undefined) {
+                $scope.proxyStatus = data.proxyStatus;
+                if (data.proxyStatus === false) {
+                    $scope.isLoadingreadMode1 = false;
+                    $scope.isLoadingreadMode2 = false;
+                    $scope.isLoadingreadMode3 = false;
+                    $scope.eclReadItems.forEach(function (item) {
+                        item.isLoading = false;
+                    });
+                    $scope.eclWriteRegisters.forEach(function (item) {
+                        item.isLoading = false;
+                    })
+                }
+            }
             if (data.Error === "" || data.Error === undefined) {
                 $scope.sauterDayloading = false;
                 $scope.sauterNightLoading = false;
@@ -232,42 +328,47 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             $scope.bitTimeout = data.bitTimeout;
             $scope.system = data.system;
 
-            if (data.register) {
-                if (data.register === "1") {
+            if (data.request) {
+                if (data.request[1] === "1") {
                     $scope.readMode1 = data.value;
                     $scope.isLoadingreadMode1 = false;
 
-                } else if (data.register === "2") {
+                } else if (data.request[1] === "2") {
                     $scope.readMode2 = data.value;
                     $scope.isLoadingreadMode2 = false;
 
-                } else if (data.register === "3") {
+                } else if (data.request[1] === "3") {
                     $scope.readMode3 = data.value;
                     $scope.isLoadingreadMode3 = false;
 
                 }
-                if (!data.value || data.value === "true") {
+                if (data.request[0] && data.request[0] === "read_app_type") {
+                    $scope.appType = data.value;
+                    $scope.isAppTypeLoading = false;
+                }
+
+                if (!data.request || data.value === "true") {
                     if (data.value !== "true")
                         showToast(data.error, 3);
                     $scope.eclReadItems.forEach(function (item) {
-                        if (item.path === data.register) {
+                        if (item.path === data.request[1]) {
                             item.isLoading = false;
                         }
                     });
                     $scope.eclWriteRegisters.forEach(function (item) {
-                        if (item.path === data.register) {
+                        if (item.path === data.request[1]) {
                             item.isLoading = false;
                         }
                     })
                 } else {
                     $scope.eclReadItems.forEach(function (item) {
-                        if (item.path === data.register) {
+                        if (item.path === data.request[1]) {
                             item.isLoading = false;
                             item.value = data.value;
                         }
                     });
                     $scope.eclWriteRegisters.forEach(function (item) {
-                        if (item.path === data.register) {
+                        if (item.path === data.request[1]) {
                             item.isLoading = false;
                             item.value = data.value;
                         }
@@ -275,10 +376,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 }
             }
 
-            if (data.app_type) {
-                $scope.appType = data.app_type;
-                $scope.isAppTypeLoading = false;
-            }
+
         };
 
 
@@ -1367,7 +1465,6 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 )));
 
 
-
         var createDiagramItem = function (name, category, path) {
 
             myDiagram.nodeTemplateMap.add(category,
@@ -1675,6 +1772,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                     .connect();
 
                 ngstomp.send("/app/hello", "hello");
+                ngstomp.send("/app/hello", "status");
 
             });
         });
@@ -1726,6 +1824,7 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
             }
         };
         var parseData = function (data) {
+
             if (data.Daysetpoint) {
                 changeVal("dayTemp", data.Daysetpoint);
                 hideToast("Значение дневной уставки установлено")
@@ -1743,15 +1842,19 @@ myapp.controller('LoginController', function ($rootScope, $scope, AuthSharedServ
                 hideToast("Положение трехпозиционного клапана установлено");
             }
 
-            if (data.register){
+            if (data.proxyStatus !== undefined) {
+                $scope.proxyStatus = data.proxyStatus;
+            }
+
+            if (data.request) {
                 eclReadItems.forEach(function (item) {
-                    if (data.register === item.path){
+                    if (data.request[1] === item.path) {
                         changeVal(item.category, data.value);
                         showToast("Здачение для " + item.name + " установлено", 3);
                     }
                 });
                 eclWriteItems.forEach(function (item) {
-                    if (data.register === item.path){
+                    if (data.request[1] === item.path) {
                         changeVal(item.category, data.value);
                         showToast("Здачение для " + item.name + " установлено", 3);
                     }

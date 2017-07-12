@@ -1,3 +1,11 @@
+<div style="position: absolute; right: 0;">
+    <md-button class="md-fab md-mini md-primary" ng-disabled="!proxyStatus" style="color: greenyellow;"
+               aria-label="proxyStatus" >
+        <md-tooltip md-direction="bottom">Proxy status</md-tooltip>
+        <md-icon md-svg-src="/resources/img/proxyStatus.svg"></md-icon>
+    </md-button>
+
+</div>
 <div class="container contain">
     <div class="well page">
 
@@ -5,6 +13,7 @@
             <md-tabs md-dynamic-height md-border-bottom>
                 <md-tab label="ECL-300 Read ony">
                     <md-content class="md-padding">
+
                         <h1 class="md-display-2">ECL-300 Read only register</h1>
                         <div layout="row" layout-sm="column" layout-align="space-around">
                             <md-progress-circular md-mode="indeterminate" class="md-accent"
@@ -29,9 +38,7 @@
                         </md-button>
                         <md-progress-circular md-mode="indeterminate" class="md-accent"
                                               ng-if="isLoadingreadMode3"></md-progress-circular>
-                        <md-button class="md-raised md-primary" ng-click="getEclAppType()" ng-if="!isAppTypeLoading">
-                            Чтение id приложения
-                        </md-button>
+
                         <md-progress-circular md-mode="indeterminate" class="md-accent"
                                               ng-if="isAppTypeLoading"></md-progress-circular>
                         <br/>
@@ -41,8 +48,7 @@
                         <span ng-if="!isLoadingreadMode2 && isLoadingreadMode2 != undefined">Состояние 2 схемы: {{readMode2}}</span>
                         <br/>
                         <span ng-if="!isLoadingreadMode3 && isLoadingreadMode3 != undefined">Состояние 3 схемы: {{readMode3}}</span>
-                        <br/>
-                        <span ng-if="!isAppTypeLoading && isAppTypeLoading != undefined">Идентификатор приложения: {{appType}}</span>
+
 
                         <md-list ng-repeat="item in eclReadItems">
                             <md-list-item class="md-3-line row">
@@ -106,15 +112,6 @@
                                                style="" ng-if="item.value != undefined">
                                         Установить
                                     </md-button>
-
-                                    <md-slider-container ng-if="item.value != undefined">
-                                        <md-slider flex min="{{item.min}}" max="{{item.max}}" ng-model="item.value"
-                                                   aria-label="val">
-                                        </md-slider>
-
-                                    </md-slider-container>
-
-
 
 
                                 </div>
