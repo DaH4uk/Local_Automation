@@ -30,7 +30,7 @@ public class GenericServiceImpl<T, D, ID extends Serializable> implements Generi
     }
 
     public D findOne(ID id) {
-        return mapper.map(repository.findOne(id), dtoClass);
+        return mapper.map(repository.getOne(id), dtoClass);
     }
 
     public List<D> findAll() {

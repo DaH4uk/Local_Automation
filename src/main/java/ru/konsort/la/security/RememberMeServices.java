@@ -57,19 +57,18 @@ public class RememberMeServices extends
 
     private static final int DEFAULT_TOKEN_LENGTH = 16;
 
-    private SecureRandom random;
+    private final SecureRandom random;
 
-    @Autowired
-    private TokenRepo tokenRepo;
+    private final TokenRepo tokenRepo;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    public RememberMeServices(Environment env, org.springframework.security.core.userdetails.UserDetailsService userDetailsService) {
+    public RememberMeServices(Environment env, org.springframework.security.core.userdetails.UserDetailsService userDetailsService, TokenRepo tokenRepo, UserRepo userRepo) {
         super(SecurityConfig.REMEMBER_ME_KEY, userDetailsService);
         super.setParameter("rememberme");
         random = new SecureRandom();
+        this.tokenRepo = tokenRepo;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -130,7 +129,7 @@ public class RememberMeServices extends
             try {
                 String[] cookieTokens = decodeCookie(rememberMeCookie);
                 Token token = getPersistentToken(cookieTokens);
-                tokenRepo.delete(token.getSeries());
+                tokenRepo.delete(token);
             } catch (InvalidCookieException ice) {
                 log.info("Invalid cookie, no persistent token could be deleted");
             } catch (RememberMeAuthenticationException rmae) {
@@ -154,7 +153,7 @@ public class RememberMeServices extends
 
         Token token = null;
         try {
-            token = tokenRepo.findOne(presentedSeries);
+            token = tokenRepo.getOne(presentedSeries);
         } catch (DataAccessException e) {
             log.error("Error to access database", e );
         }
@@ -168,12 +167,12 @@ public class RememberMeServices extends
         log.info("presentedToken={} / tokenValue={}", presentedToken, token.getValue());
         if (!presentedToken.equals(token.getValue())) {
             // Token doesn't match series value. Delete this session and throw an exception.
-            tokenRepo.delete(token.getSeries());
+            tokenRepo.delete(token);
             throw new CookieTheftException("Invalid remember-me token (Series/token) mismatch. Implies previous cookie theft attack.");
         }
 
         if (DateUtils.addDays(token.getDate(), TOKEN_VALIDITY_DAYS).before(new Date())) {
-            tokenRepo.delete(token.getSeries());
+            tokenRepo.delete(token);
             throw new RememberMeAuthenticationException("Remember-me login has expired");
         }
         return token;

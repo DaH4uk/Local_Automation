@@ -1,16 +1,11 @@
 package ru.konsort.la.service.Impl;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.konsort.la.model.RegisterData;
 import ru.konsort.la.service.ControllerDataService;
 import ru.konsort.la.service.HttpLocalService;
-import ru.konsort.la.service.RegisterUpdateDataService;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -21,19 +16,23 @@ import java.util.Map;
  */
 @Service
 public class ControllerDataServiceImpl implements ControllerDataService {
-    private Map<String, String> registerGetDataMap = new HashMap<>();
-    private Map<String, String> registerSetDataMap = new HashMap<>();
+    private final Map<String, String> registerGetDataMap = new HashMap<>();
+    private final Map<String, String> registerSetDataMap = new HashMap<>();
     private String url;
-    @Autowired
-    private HttpLocalService httpLocalService;
-    @Autowired
-    private Environment environment;
+    private final HttpLocalService httpLocalService;
+    private final Environment environment;
+
+    public ControllerDataServiceImpl(HttpLocalService httpLocalService, Environment environment) {
+        this.httpLocalService = httpLocalService;
+        this.environment = environment;
+    }
+
 
     @PostConstruct
     private void createRegistersMap(){
         this.url = environment.getRequiredProperty("driver.address") + ":" + environment.getRequiredProperty("driver.port");
-        /**
-         * Read data
+        /*
+          Read data
          */
         registerGetDataMap.put("karat_data", "current_data.py?get_data=yes");
         registerGetDataMap.put("sauter_read_coil", "sauter.py?read_coil_57=yes");
@@ -41,7 +40,7 @@ public class ControllerDataServiceImpl implements ControllerDataService {
         registerGetDataMap.put("sauter_read_night_sp_rk1", "sauter.py?read_night_sp_rk1=yes");
         registerGetDataMap.put("sauter_get_control_rk1", "sauter.py?get_control_rk1=yes");
         registerGetDataMap.put("sauter_get_time", "sauter.py?get_time=yes");
-        /**
+        /*
          * Set data
          */
         registerSetDataMap.put("day_setpoint_rk1", "sauter.py?day_setpoint_rk1");

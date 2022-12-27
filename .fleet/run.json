@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "type": "maven",
+            "name": "run",
+            "tasks": ["clean", "install"],
+            "args": ["-DskipTests=true"],
+        }, {
+        "type": "maven",
+        "name": "spring:run",
+        "tasks": ["spring-boot:run"],
+        "args": ["-Dspring-boot.run.profiles=dev,local"],
+    }
+
+    ]
+}

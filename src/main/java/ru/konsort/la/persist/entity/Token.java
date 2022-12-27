@@ -12,6 +12,7 @@ import java.util.Date;
 @Table(name = "token")
 public class Token implements Serializable {
 
+    private static final long serialVersionUID = 109239399429L;
 
     @Id
     private String series;

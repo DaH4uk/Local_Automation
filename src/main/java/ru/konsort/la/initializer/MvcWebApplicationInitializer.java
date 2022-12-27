@@ -9,12 +9,12 @@ public class MvcWebApplicationInitializer  extends AbstractAnnotationConfigDispa
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[]{SecurityConfig.class, JPAConfig.class};
+        return new Class<?>[]{SecurityConfig.class, JPAConfig.class};
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] {MvcConfig.class};
+        return new Class<?>[] {MvcConfig.class};
     }
 
     @Override

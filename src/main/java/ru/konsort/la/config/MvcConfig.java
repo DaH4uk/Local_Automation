@@ -29,7 +29,7 @@ import javax.servlet.ServletContext;
 @Import({SecurityConfig.class, WebSocketConfig.class, SchedulingConfig.class})
 @EnableWebMvc
 @EnableSwagger2
-@ComponentScan(basePackages = { "ru.konsort.la.web.controller"})
+@ComponentScan(basePackages = { "ru.konsort.la.web.controller", "ru.konsort.la.service"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean
@@ -74,11 +74,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         return new ControllerDataRepoImpl();
     }
 
-    @Bean(name = "controllerService")
-    public ControllerDataService controllerService() {
-        return new ControllerDataServiceImpl();
-    }
-
     @Bean(name = "httpLocalService")
     public HttpLocalService httpLocalService(){
         return new HttpLocalServiceImpl();
@@ -88,9 +83,5 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public WebSocketClientService webSocketClientService(){
         return new WebSocketClientServiceImpl();
     }
-
-
-
-
 
 }

@@ -25,17 +25,17 @@ public class SchemeController {
     private static final Logger logger = LoggerFactory.getLogger(SchemeController.class);
 
 
-    @Autowired
-    private LinkDataRepo linkDataRepo;
+    private final LinkDataRepo linkDataRepo;
+    private final NodeDataRepo nodeDataRepo;
+    private final SchemesRepo schemesRepo;
+    private final ImageRepo imageRepo;
 
-    @Autowired
-    private NodeDataRepo nodeDataRepo;
-
-    @Autowired
-    private SchemesRepo schemesRepo;
-
-    @Autowired
-    private ImageRepo imageRepo;
+    public SchemeController(LinkDataRepo linkDataRepo, NodeDataRepo nodeDataRepo, SchemesRepo schemesRepo, ImageRepo imageRepo) {
+        this.linkDataRepo = linkDataRepo;
+        this.nodeDataRepo = nodeDataRepo;
+        this.schemesRepo = schemesRepo;
+        this.imageRepo = imageRepo;
+    }
 
 
     @RequestMapping(value = "/scheme/links", method = RequestMethod.GET)
@@ -58,8 +58,7 @@ public class SchemeController {
     List<LinkData> saveLinkDataList(@RequestBody List<LinkData> linkDataList) {
         logger.debug("save linkDataList");
         linkDataRepo.deleteAll();
-        linkDataRepo.save(linkDataList);
-        linkDataRepo.flush();
+        linkDataRepo.saveAllAndFlush(linkDataList);
         return linkDataList;
     }
 
@@ -67,16 +66,13 @@ public class SchemeController {
     @ResponseBody
     public List<NodeData> saveNodeDataList(@RequestBody List<NodeData> nodeDataList, @RequestParam(value = "schemeId") Long schemeId) {
         List<NodeData> nodeData = nodeDataRepo.findBySchemeId(schemeId);
-        for (NodeData oldNodes : nodeData) {
-            nodeDataRepo.delete(oldNodes.getId());
-        }
+        nodeDataRepo.deleteAll(nodeData);
 
         for (NodeData newNodes : nodeDataList) {
             newNodes.setSchemeId(schemeId);
         }
         logger.debug("save nodeDataList");
-        nodeDataRepo.save(nodeDataList);
-        nodeDataRepo.flush();
+        nodeDataRepo.saveAllAndFlush(nodeDataList);
         return nodeDataList;
     }
 
@@ -110,14 +106,14 @@ public class SchemeController {
     }
 
     @RequestMapping(value = "/scheme/getImageIds", method = RequestMethod.GET)
-    public List getFiles(HttpServletResponse response) throws IOException {
+    public List<Image> getFiles(HttpServletResponse response) {
         return imageRepo.findAll();
     }
 
     @RequestMapping(value = "/scheme/getImageById", method = RequestMethod.GET)
     public void getImage(@RequestParam(value = "id") Long id, HttpServletResponse response) throws IOException {
 
-        Image image = imageRepo.findById(id);
+        Image image = imageRepo.getOne(id);
         OutputStream outputStream = response.getOutputStream();
 
         outputStream.write(image.getImg());
@@ -130,7 +126,7 @@ public class SchemeController {
     @RequestMapping(value = "/scheme/getThumbnailImageById", method = RequestMethod.GET)
     public void getThumbnailImage(@RequestParam(value = "id") Long id, HttpServletResponse response) throws IOException {
 
-        Image image = imageRepo.findById(id);
+        Image image = imageRepo.getOne(id);
 
         File file = new File(image.getImageName());
 

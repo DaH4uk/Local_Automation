@@ -3,7 +3,6 @@ package ru.konsort.la.persist.repo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.konsort.la.persist.entity.NodeData;
 
-import javax.xml.soap.Node;
 import java.util.List;
 
 public interface NodeDataRepo extends JpaRepository<NodeData, Long> {
