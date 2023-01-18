@@ -15,20 +15,16 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import ru.konsort.la.persist.repo.ControllerDataRepo;
 import ru.konsort.la.persist.repo.ControllerDataRepoImpl;
-import ru.konsort.la.service.ControllerDataService;
 import ru.konsort.la.service.HttpLocalService;
-import ru.konsort.la.service.Impl.ControllerDataServiceImpl;
 import ru.konsort.la.service.Impl.HttpLocalServiceImpl;
 import ru.konsort.la.service.Impl.WebSocketClientServiceImpl;
 import ru.konsort.la.service.WebSocketClientService;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.ServletContext;
 
 @Configuration
 @Import({SecurityConfig.class, WebSocketConfig.class, SchedulingConfig.class})
 @EnableWebMvc
-@EnableSwagger2
 @ComponentScan(basePackages = { "ru.konsort.la.web.controller", "ru.konsort.la.service"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
